@@ -6,7 +6,21 @@
 <br>
 
 <h2>DESCRIPTION</h2>
-<p>The last calendar table you'll ever need!  Great for process flow conditions (e.g., check to see if today is the first Sunday in the year before running a code block), slicing data (e.g., compare data from workday x each month), features for machine learning models (e.g., use "percent of month complete" as a feature in a regression), data visualization (e.g., use calendar metadata as filter or axis in a PowerBI view), and more!</p>
+<p>The last calendar table you'll ever need!  Great for: 
+  <li>process flow conditions (e.g., check to see if today is the first Sunday in the year before running a code block)
+  <li>slicing data (e.g., compare data from workday x each month)
+  <li>features for machine learning models (e.g., use "percent of month complete" as a feature in a regression)
+  <li>data visualization (e.g., use calendar metadata as filter or axis in a PowerBI view), and more!</p>
+
+<br>
+
+<h2>NOTABLE FEATURES</h2>
+<p>
+   <li>handling for calculating Easter Sunday for any year (including prior to 1583)
+   <li>lunar cycles
+   <li>sunrise / sunset times
+   <li>and more
+</p>
 
 <br>
 
