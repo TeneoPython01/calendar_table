@@ -16,7 +16,8 @@
 
 <h2>NOTABLE FEATURES</h2>
 <p>
-   <li>handling for calculating Easter Sunday for any year (including prior to 1583)
+   <li>calculating Easter Sunday for any year (including prior to 1583)
+   <li>custom holiday management to identify workdays
    <li>lunar cycles
    <li>sunrise / sunset times
    <li>and more
