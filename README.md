@@ -25,8 +25,10 @@ Additionally, some interesting and unique data elements include:
 <li> length of daylight / darkness each day/evening
 </ul>
 
+Look at the .csv in the git repo to see all of the columns!
+
 <h3>
-WHY?
+WHY CREATE A CALENDAR TABLE / DATE DIMENSION TABLE?
 </h3>
 Calendar tables have myriad uses.  Examples:
 <ul>
