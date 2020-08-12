@@ -30,27 +30,27 @@ WHY?
 </h3>
 Calendar tables have myriad uses.  Examples:
 <ul>
-<li> PROCESS FLOW CONTROLS
+<li> PROCESS FLOW CONTROLS<br>
   Check today's date.  If it is a Sunday or the
   last day of the month, then run a code block.
-<li> SLICING DATA FOR ANALYSIS
+<li> SLICING DATA FOR ANALYSIS<br>
   From the revenue dataset, show me all sales that
   fall between Thanksgiving and Christmas, and
   determine which days be best for best door-
   buster promotions
-<li> FEATURES FOR MACHINE LEARNING MODELS
+<li> FEATURES FOR MACHINE LEARNING MODELS<br>
   Using a polynomial linear regression, predict
   the end-of-month sales using the month-to-date
   sales along with the knowledge of what percent
   through the month the data is, comparing
   to similar data from prior months.
-<li> DATA VISUALIZATION
+<li> DATA VISUALIZATION<br>
   In Microsoft PowerBI, or in Excel, or in Tableau,
   or in any tool... Use the workday of the month as
   the x-axis in a bar chart that shows the change
   in time clocked by employees on a given project
   in a given month
-<li> AND MORE?
+<li> AND MORE?<br>
   Send me more examples to add!
 </ul>
 
