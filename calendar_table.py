@@ -6,89 +6,12 @@ and metadata. Output to dataframe or CSV
 to ingest into a database or for use in
 an application like Excel or PowerBI.
 
-WHAT KIND OF COLUMNS?
-First of all, you'll find the usual dimensions:
-o year number, month number, day number, yearmonth, yearquarter
-o month name, day name, full date w ordinal suffix (e.g., "January 3rd, 2012")
-o etc.
-Additionally, some interesting and unique data elements include:
-o holiday identification including Easter in any year (including pre-1583)
-o moon phase identification
-o sunrise/sunset for UTC as well as user-provided lat/lon coordinates
-o length of daylight / darkness each day/evening
-
-WHY?
-Calendar tables have myriad uses.  Examples:
-o PROCESS FLOW CONTROLS
-  Check today's date.  If it is a Sunday or the
-  last day of the month, then run a code block.
-o SLICING DATA FOR ANALYSIS
-  From the revenue dataset, show me all sales that
-  fall between Thanksgiving and Christmas, and
-  determine which days be best for best door-
-  buster promotions
-o FEATURES FOR MACHINE LEARNING MODELS
-  Using a polynomial linear regression, predict
-  the end-of-month sales using the month-to-date
-  sales along with the knowledge of what percent
-  through the month the data is, comparing
-  to similar data from prior months.
-o DATA VISUALIZATION
-  In Microsoft PowerBI, or in Excel, or in Tableau,
-  or in any tool... Use the workday of the month as
-  the x-axis in a bar chart that shows the change
-  in time clocked by employees on a given project
-  in a given month
-o AND MORE?
-  Send me more examples to add!
-
-NOTES:
-o Example CSV output is provided in git repo
-o When this code is run for a span of 5 years:
-  + ~2,200 rows of data are created with ~100 columns (~220k cells)
-  + the resulting CSV's filesize is about 1.4 MiB
-  + the script takes 25 seconds on my raspberry pi 4B (very low specs)
-  + code will run much faster on a modern laptop or desktop
-o No special import statements needed besides standard Python
-  3.7+ packages
-o 32-bit OS and hardware may cause limitations in the ability
-  to generate table data for years far in the future (2040)
-  and throw "OverflowError: timestamp out of range for
-  platform time_t"; no limitation has been observed on
-  64-bit systems.  
-
-AUTHOR:
-This file was authored by TeneoPython01 with select
-code excerpts leveraged from other authors where
-noted.  In some cases the noted authors' code has
-been materially modified.  In other cases it has
-been used verbatim.  All other code is original.
+See readme.md in git repo for more info
 
 ABOUT AUTHOR:
 Contact me at https://github.com/TeneoPython01
 
-TO DO:
-o modularize codes with classes/functions
-o use config file to set main params (start,
-  end, holiday rules, lat/lon for localized
-  data like moon phase, sunrise, etc.)
-o add columns
-  + percent through w / ym / y / etc
-  + add season based on official start/end of seasons? (equinox, etc)
-o fix bugs in the following:
-  + night duration utc / night duration local
-
-COLLABORATION?
-Collaboration is sought and encouraged on this project!
-
-LICENSE:
-See license information in git repo.  The software
-is released in the public domain as-is without any
-warranty.  More details can be found in the
-license file.
-
 '''
-
 
 import math
 import pandas as pd
@@ -96,8 +19,10 @@ import numpy as np
 from datetime import datetime
 from datetime import timedelta
 from dateutil import tz
-import requests as r
 import calendar
+
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
 
 print(datetime.now())
 print('calendar table process started')
@@ -445,32 +370,61 @@ def mapDayOfWeekToOrdinalFieldName(dow_number):
     elif dow_number == 5: return 'sat'
     elif dow_number == 6: return 'sun'
 
-"""
-request = r.get('http://api.sunrise-sunset.org/json?lat=-32.7767&lng=96.7970&formatted=0')
-timestring = r.html
-utcsunrise = timestring[34:39]
-utcsunset = timestring[71:76]
-utcmorning = timestring[182:187]
-utcnight = timestring[231:236]
-"""
+def make_list(var):
+    """
+    Convert a variable to a list with one item (the original variable) if it isn't a list already.
+    :param var: the variable to check.  if it's already a list, do nothing.  else, put it in a list.
+    :return: the variable in a one-item list if it wasnt already a list.
+    """
+    
+    if type(var) is not list:
+        var = [ var ]
 
-#print(utcsunrise, utcsunset, utcmorning, utcnight)
+    return(var)
 
+def addColumnFromGroupbyOperation(df, new_field_name, field_to_groupby, operate_on, operation):
+    """
+    Calculate sunrise or sunset date.
+    :param df: dataframe that will have the column added from the groupby operation
+    :param new_field_name: name of the field (string) that will be created
+    :param field_to_groupby: field (string) or list of fields (list of strings) to use in the groupby
+    :param operate_on: field (string) or list of fields (list of strings) that will be aggregated (summed, max'd, min'd, etc.)
+    :param operation: the aggregation method (string) such as sum, max, min, etc.
+    :return: df with new column added
+    """
 
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', None)
+    fields_list = []
+    #fields_list.append(field_to_groupby)
 
+    field_to_groupby = make_list(field_to_groupby)
 
+    for item in field_to_groupby:
+        fields_list.append(item)
 
-"""
-def findHoliday(dt=None, month_dow_and_ct=None):
-    if dt is None:
-        pass
+    fields_list.append(operate_on)
+
+    if operation == 'count':
+        df[new_field_name] = df.merge(
+            df[fields_list].groupby(field_to_groupby)[operate_on].count().reset_index(),
+            how='inner',
+            on=field_to_groupby,
+            suffixes=('','_r')
+            )[operate_on+'_r']
     else:
-        pass
+        
+        #operation = operation + '()'
+        operation = 'np.'+operation
 
-    return None
-"""
+        df[new_field_name] = df.merge(
+            df[fields_list].groupby(field_to_groupby)[operate_on].apply(eval(operation)).reset_index(),
+            how='inner',
+            on=field_to_groupby,
+            suffixes=('','_r')
+            )[operate_on+'_r']
+
+    return df
+
+
 
 
 df = pd.DataFrame()
@@ -566,41 +520,20 @@ df['is_weekd'] = np.where(df['dow'].isin([0,1,2,3,4,]), 1, 0)
 df['weekdom'] = df[['ym','is_weekd']].groupby('ym')['is_weekd'].cumsum()
 
 #total weekdays in yearmonth
-df['tot_weekd_in_mo'] = df.merge(
-    df[['ym','is_weekd']].groupby('ym')['is_weekd'].sum().reset_index(),
-    how='inner',
-    on='ym',
-    suffixes=('','_r')
-    )['is_weekd_r']
+df = addColumnFromGroupbyOperation(df, 'tot_weekd_in_mo', 'ym', 'is_weekd', 'sum')
+
 
 #total caldays in yearmonth
-df['tot_cald_in_mo'] = df.merge(
-    df[['ym','dt_int']].groupby('ym')['dt_int'].count().reset_index(),
-    how='inner',
-    on='ym',
-    suffixes=('','_r')
-    )['dt_int_r']
-
-#print(df_temp)
+df = addColumnFromGroupbyOperation(df, 'tot_cald_in_mo', 'ym', 'dt_int', 'count')
 
 #weekdays in year through date
 df['weekdoy'] = df[['y','is_weekd']].groupby('y')['is_weekd'].cumsum()
 
 #total weekdays in year
-df['tot_weekd_in_y'] = df.merge(
-    df[['y','is_weekd']].groupby('y')['is_weekd'].sum().reset_index(),
-    how='inner',
-    on='y',
-    suffixes=('','_r')
-    )['is_weekd_r']
+df = addColumnFromGroupbyOperation(df, 'tot_weekd_in_y', 'y', 'is_weekd', 'sum')
 
 #total caldays in year
-df['tot_cald_in_y'] = df.merge(
-    df[['y','dt_int']].groupby('y')['dt_int'].count().reset_index(),
-    how='inner',
-    on='y',
-    suffixes=('','_r')
-    )['dt_int_r']
+df = addColumnFromGroupbyOperation(df, 'tot_cald_in_y', 'y', 'dt_int', 'count')
 
 #is monday (1=True, 0=False)
 df['is_dow_mon'] = (df['dow']==0).astype(int)
@@ -625,133 +558,49 @@ df['is_dow_sun'] = (df['dow']==6).astype(int)
 
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_mon'
-df['tot_mon_in_ym'] = df.merge(
-    df[['ym',field_to_sum]].groupby('ym')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='ym',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_mon_in_ym', 'ym', 'is_dow_mon', 'sum')
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_tue'
-df['tot_tue_in_ym'] = df.merge(
-    df[['ym',field_to_sum]].groupby('ym')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='ym',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_tue_in_ym', 'ym', 'is_dow_tue', 'sum')
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_wed'
-df['tot_wed_in_ym'] = df.merge(
-    df[['ym',field_to_sum]].groupby('ym')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='ym',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_wed_in_ym', 'ym', 'is_dow_wed', 'sum')
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_thu'
-df['tot_thu_in_ym'] = df.merge(
-    df[['ym',field_to_sum]].groupby('ym')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='ym',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_thu_in_ym', 'ym', 'is_dow_thu', 'sum')
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_fri'
-df['tot_fri_in_ym'] = df.merge(
-    df[['ym',field_to_sum]].groupby('ym')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='ym',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_fri_in_ym', 'ym', 'is_dow_fri', 'sum')
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_sat'
-df['tot_sat_in_ym'] = df.merge(
-    df[['ym',field_to_sum]].groupby('ym')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='ym',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_sat_in_ym', 'ym', 'is_dow_sat', 'sum')
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_sun'
-df['tot_sun_in_ym'] = df.merge(
-    df[['ym',field_to_sum]].groupby('ym')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='ym',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_sun_in_ym', 'ym', 'is_dow_sun', 'sum')
 
 
 
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_mon'
-df['tot_mon_in_y'] = df.merge(
-    df[['y',field_to_sum]].groupby('y')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='y',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_mon_in_y', 'y', 'is_dow_mon', 'sum')
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_tue'
-df['tot_tue_in_y'] = df.merge(
-    df[['y',field_to_sum]].groupby('y')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='y',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_tue_in_y', 'y', 'is_dow_tue', 'sum')
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_wed'
-df['tot_wed_in_y'] = df.merge(
-    df[['y',field_to_sum]].groupby('y')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='y',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_wed_in_y', 'y', 'is_dow_wed', 'sum')
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_thu'
-df['tot_thu_in_y'] = df.merge(
-    df[['y',field_to_sum]].groupby('y')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='y',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_thu_in_y', 'y', 'is_dow_thu', 'sum')
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_fri'
-df['tot_fri_in_y'] = df.merge(
-    df[['y',field_to_sum]].groupby('y')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='y',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_fri_in_y', 'y', 'is_dow_fri', 'sum')
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_sat'
-df['tot_sat_in_y'] = df.merge(
-    df[['y',field_to_sum]].groupby('y')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='y',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_sat_in_y', 'y', 'is_dow_sat', 'sum')
 
 #total mondays in yearmonth
-field_to_sum = 'is_dow_sun'
-df['tot_sun_in_y'] = df.merge(
-    df[['y',field_to_sum]].groupby('y')[field_to_sum].sum().reset_index(),
-    how='inner',
-    on='y',
-    suffixes=('','_r')
-    )[field_to_sum+'_r']
+df = addColumnFromGroupbyOperation(df, 'tot_sun_in_y', 'y', 'is_dow_sun', 'sum')
 
 
 
@@ -806,14 +655,7 @@ df['dow_om'] = 'dow_' + df['dow'].apply(lambda x: mapDayOfWeekToOrdinalFieldName
 df['dow_om'] = df[df['dow_om'].values]
 
 #is last dow of yearmonth based on dow:
-dimension = 'ym'
-field_to_take = 'dow_om'
-df['dow_om_max'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].max().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'dow_om_max', 'ym', 'dow_om', 'max')
 
 
 #dow of year based on dow: first find the appropriate col to ref, then grab its value
@@ -875,180 +717,57 @@ df['is_d_leapyr'] = np.where(
     )
 
 #is yearmonth a Feb that contains Leap Year day
-df['is_ym_leapyr'] = df.merge(
-    df[['ym','is_d_leapyr']].groupby('ym')['is_d_leapyr'].sum().reset_index(),
-    how='inner',
-    on='ym',
-    suffixes=('','_r')
-    )['is_d_leapyr_r']
+df = addColumnFromGroupbyOperation(df, 'is_ym_leapyr', 'ym', 'is_d_leapyr', 'sum')
 
 #is year a leap year
-df['is_y_leapyr'] = df.merge(
-    df[['y','is_d_leapyr']].groupby('y')['is_d_leapyr'].sum().reset_index(),
-    how='inner',
-    on='y',
-    suffixes=('','_r')
-    )['is_d_leapyr_r']
+df = addColumnFromGroupbyOperation(df, 'is_y_leapyr', 'y', 'is_d_leapyr', 'sum')
 
 #first day of month datetime
-dimension = 'ym'
-field_to_take = 'dt'
-df['first_dom_dt'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].min().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'first_dom_dt', 'ym', 'dt', 'min')
 
 #first day of month int
-dimension = 'ym'
-field_to_take = 'dt_int'
-df['first_dom_int'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].min().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'first_dom_int', 'ym', 'dt_int', 'min')
 
 #last day of month datetime
-dimension = 'ym'
-field_to_take = 'dt'
-df['last_dom_dt'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].max().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'last_dom_dt', 'ym', 'dt', 'max')
 
 #last day of month datetime
-dimension = 'ym'
-field_to_take = 'dt_int'
-df['last_dom_int'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].max().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'last_dom_int', 'ym', 'dt_int', 'max')
 
 #first day of yearquarter datetime
-dimension = 'yq'
-field_to_take = 'dt'
-df['first_doyq_dt'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].min().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'first_doyq_dt', 'yq', 'dt', 'min')
 
 #first day of yearquarter int
-dimension = 'yq'
-field_to_take = 'dt_int'
-df['first_doyq_int'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].min().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'first_doyq_int', 'yq', 'dt_int', 'min')
 
 #last day of yearquarter datetime
-dimension = 'yq'
-field_to_take = 'dt'
-df['last_doyq_dt'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].max().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'last_doyq_dt', 'yq', 'dt', 'max')
 
 #last day of yearquarter datetime
-dimension = 'yq'
-field_to_take = 'dt_int'
-df['last_doyq_int'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].max().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'last_doyq_int', 'yq', 'dt_int', 'max')
 
 #first day of yearhalf datetime
-dimension = 'yh'
-field_to_take = 'dt'
-df['first_doyh_dt'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].min().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
 
 #first day of yearhalf int
-dimension = 'yh'
-field_to_take = 'dt_int'
-df['first_doyh_int'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].min().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'first_doyh_int', 'yh', 'dt_int', 'min')
 
 #last day of yearhalf datetime
-dimension = 'yh'
-field_to_take = 'dt'
-df['last_doyh_dt'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].max().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'last_doyh_dt', 'yh', 'dt', 'max')
 
 #last day of yearhalf datetime
-dimension = 'yh'
-field_to_take = 'dt_int'
-df['last_doyh_int'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].max().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'last_doyh_int', 'yh', 'dt_int', 'max')
 
 #first day of year datetime
-dimension = 'y'
-field_to_take = 'dt'
-df['first_doy_dt'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].min().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'first_doy_dt', 'y', 'dt', 'min')
 
 #first day of year int
-dimension = 'y'
-field_to_take = 'dt_int'
-df['first_doy_int'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].min().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'first_doy_int', 'y', 'dt_int', 'min')
 
 #last day of year datetime
-dimension = 'y'
-field_to_take = 'dt'
-df['last_doy_dt'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].max().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'last_doy_dt', 'y', 'dt', 'max')
 
 #last day of year datetime
-dimension = 'y'
-field_to_take = 'dt_int'
-df['last_doy_int'] = df.merge(
-    df[[dimension,field_to_take]].groupby(dimension)[field_to_take].max().reset_index(),
-    how='inner',
-    on=dimension,
-    suffixes=('','_r')
-    )[field_to_take+'_r']
+df = addColumnFromGroupbyOperation(df, 'last_doy_int', 'y', 'dt_int', 'max')
 
 #moon phase name (approximate)
 moon = Moon()
@@ -1092,3 +811,5 @@ df.to_csv('./temp_csv.csv')
 
 print(datetime.now())
 print('calendar table process completed')
+
+print(df.dtypes)
