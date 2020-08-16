@@ -19,6 +19,7 @@ import numpy as np
 from datetime import datetime, timedelta
 from dateutil import tz
 from udfs import moon, sun, holiday, date_udfs, df_udfs, misc_udfs
+from docs import create_docs
 
 #SET DISPLAY OPTIONS FOR PRINTING TO SCREEN
 pd.set_option('display.max_columns', None)
@@ -399,4 +400,8 @@ df.to_csv('./temp_csv.csv')
 
 misc_udfs.tprint('Calendar table process completed')
 
-misc_udfs.tprint(message=df.dtypes, multiline_header='Printing the calendar table columns and datatypes:')
+#misc_udfs.tprint(message=df.dtypes, multiline_header='Printing the calendar table columns and datatypes:')
+
+#generate the HTML support document that explains each column in tha calendar_table
+create_docs.createColumnDescriptionHTML(df, './docs/input/desc.csv', './docs/col_descriptions.html')#.to_csv('./docs/')
+misc_udfs.tprint('Documention about column descriptions and datatypes loaded to ./docs/col_descriptions.html')
