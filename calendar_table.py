@@ -16,426 +16,23 @@ Contact me at https://github.com/TeneoPython01
 import math
 import pandas as pd
 import numpy as np
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from dateutil import tz
-import calendar
+from udfs import moon, sun, holiday, date_udfs, df_udfs, misc_udfs
 
+#SET DISPLAY OPTIONS FOR PRINTING TO SCREEN
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
-print(datetime.now())
-print('calendar table process started')
-
-#class to determine moon phases (approximate)
-#class code from https://gist.github.com/mrrrk/
-class Moon:
-
-    # average length of a lunar cycle (Wikipedia)
-    @staticmethod
-    def lunar_month_days(): return 29.530588853
-
-    @staticmethod
-    def day_of_cycle(test_date=None):
-        if test_date is None:
-            #test_date = datetime.datetime.now()
-            test_date = datetime.now()
-        # the closer the base date (a known new-moon) is to the dates we're interested with, the better
-        #base_new_moon = datetime.datetime(2017, 8, 21, 18, 30, 0)
-        base_new_moon = datetime(2017, 8, 21, 18, 30, 0)
-        days = (test_date - base_new_moon).total_seconds() / (24.0 * 60.0 * 60.0)
-        return days % Moon.lunar_month_days()
-
-    @staticmethod
-    def illumination(day_of_cycle):
-        # translate daily position as an angle between 0 and 360°
-        angle = 2 * math.pi * day_of_cycle / Moon.lunar_month_days()
-        # move and resize cosine curve so it represents waxing and waning as value from 0 to 1
-        return (1 + (-math.cos(angle))) / 2.0
-
-    # This isn't strictly accurate because new moon and full moon do not actually last for 1/8th of a cycle
-    @staticmethod
-    def phase(day_of_cycle):
-        proportion = (day_of_cycle) / Moon.lunar_month_days()
-        # add 0.5 to put value in 'middle' of phase
-        #  - which might put it past end of array, so use bitwise AND to lop it off
-        index = int(proportion * 8.0 + 0.5) & 7
-        index_float = (proportion * 8.0 + 0.5)
-        return {
-             0: "New Moon",
-             1: "Waxing Crescent",
-             2: "First Quarter",
-             3: "Waxing Gibbous",
-             4: "Full Moon",
-             5: "Waning Gibbous",
-             6: "Last Quarter",
-             7: "Waning Crescent"
-        }[index], index, index_float
-
-
-#class to raise expception for Sun class
-class SunTimeException(Exception):
-
-    def __init__(self, message):
-        super(SunTimeException, self).__init__(message)
-
-#class to find sunrise and sunset times by day and lat/lon location
-class Sun:
-    """
-    Approximated calculation of sunrise and sunset datetimes. Adapted from:
-    https://stackoverflow.com/questions/19615350/calculate-sunrise-and-sunset-times-for-a-given-gps-coordinate-within-postgresql
-    """
-    def __init__(self, lat, lon):
-        self._lat = lat
-        self._lon = lon
-
-    def get_sunrise_time(self, date=None):
-        """
-        Calculate the sunrise time for given date.
-        :param lat: Latitude
-        :param lon: Longitude
-        :param date: Reference date. Today if not provided.
-        :return: UTC sunrise datetime
-        :raises: SunTimeException when there is no sunrise and sunset on given location and date
-        """
-        date = datetime.date.today() if date is None else date
-        sr = self._calc_sun_time(date, True)
-        if sr is None:
-            raise SunTimeException('The sun never rises on this location (on the specified date)')
-        else:
-            return sr
-
-    def get_local_sunrise_time(self, date=None, local_time_zone=tz.tzlocal()):
-        """
-        Get sunrise time for local or custom time zone.
-        :param date: Reference date. Today if not provided.
-        :param local_time_zone: Local or custom time zone.
-        :return: Local time zone sunrise datetime
-        """
-        date = datetime.date.today() if date is None else date
-        sr = self._calc_sun_time(date, True)
-        if sr is None:
-            raise SunTimeException('The sun never rises on this location (on the specified date)')
-        else:
-            return sr.astimezone(local_time_zone)
-
-    def get_sunset_time(self, date=None):
-        """
-        Calculate the sunset time for given date.
-        :param lat: Latitude
-        :param lon: Longitude
-        :param date: Reference date. Today if not provided.
-        :return: UTC sunset datetime
-        :raises: SunTimeException when there is no sunrise and sunset on given location and date.
-        """
-        date = datetime.date.today() if date is None else date
-        ss = self._calc_sun_time(date, False)
-        if ss is None:
-            raise SunTimeException('The sun never sets on this location (on the specified date)')
-        else:
-            return ss
-
-    def get_local_sunset_time(self, date=None, local_time_zone=tz.tzlocal()):
-        """
-        Get sunset time for local or custom time zone.
-        :param date: Reference date
-        :param local_time_zone: Local or custom time zone.
-        :return: Local time zone sunset datetime
-        """
-        date = datetime.date.today() if date is None else date
-        ss = self._calc_sun_time(date, False)
-        if ss is None:
-            raise SunTimeException('The sun never sets on this location (on the specified date)')
-        else:
-            return ss.astimezone(local_time_zone)
-
-    def _calc_sun_time(self, date, isRiseTime=True, zenith=90.8):
-        """
-        Calculate sunrise or sunset date.
-        :param date: Reference date
-        :param isRiseTime: True if you want to calculate sunrise time.
-        :param zenith: Sun reference zenith
-        :return: UTC sunset or sunrise datetime
-        :raises: SunTimeException when there is no sunrise and sunset on given location and date
-        """
-        # isRiseTime == False, returns sunsetTime
-        day = date.day
-        month = date.month
-        year = date.year
-
-        TO_RAD = math.pi/180.0
-
-        # 1. first calculate the day of the year
-        N1 = math.floor(275 * month / 9)
-        N2 = math.floor((month + 9) / 12)
-        N3 = (1 + math.floor((year - 4 * math.floor(year / 4) + 2) / 3))
-        N = N1 - (N2 * N3) + day - 30
-
-        # 2. convert the longitude to hour value and calculate an approximate time
-        lngHour = self._lon / 15
-
-        if isRiseTime:
-            t = N + ((6 - lngHour) / 24)
-        else: #sunset
-            t = N + ((18 - lngHour) / 24)
-
-        # 3. calculate the Sun's mean anomaly
-        M = (0.9856 * t) - 3.289
-
-        # 4. calculate the Sun's true longitude
-        L = M + (1.916 * math.sin(TO_RAD*M)) + (0.020 * math.sin(TO_RAD * 2 * M)) + 282.634
-        L = self._force_range(L, 360 ) #NOTE: L adjusted into the range [0,360)
-
-        # 5a. calculate the Sun's right ascension
-
-        RA = (1/TO_RAD) * math.atan(0.91764 * math.tan(TO_RAD*L))
-        RA = self._force_range(RA, 360 ) #NOTE: RA adjusted into the range [0,360)
-
-        # 5b. right ascension value needs to be in the same quadrant as L
-        Lquadrant  = (math.floor( L/90)) * 90
-        RAquadrant = (math.floor(RA/90)) * 90
-        RA = RA + (Lquadrant - RAquadrant)
-
-        # 5c. right ascension value needs to be converted into hours
-        RA = RA / 15
-
-        # 6. calculate the Sun's declination
-        sinDec = 0.39782 * math.sin(TO_RAD*L)
-        cosDec = math.cos(math.asin(sinDec))
-
-        # 7a. calculate the Sun's local hour angle
-        cosH = (math.cos(TO_RAD*zenith) - (sinDec * math.sin(TO_RAD*self._lat))) / (cosDec * math.cos(TO_RAD*self._lat))
-
-        if cosH > 1:
-            return None     # The sun never rises on this location (on the specified date)
-        if cosH < -1:
-            return None     # The sun never sets on this location (on the specified date)
-
-        # 7b. finish calculating H and convert into hours
-
-        if isRiseTime:
-            H = 360 - (1/TO_RAD) * math.acos(cosH)
-        else: #setting
-            H = (1/TO_RAD) * math.acos(cosH)
-
-        H = H / 15
-
-        #8. calculate local mean time of rising/setting
-        T = H + RA - (0.06571 * t) - 6.622
-
-        #9. adjust back to UTC
-        UT = T - lngHour
-        UT = self._force_range(UT, 24)   # UTC time in decimal format (e.g. 23.23)
-
-        #10. Return
-        hr = self._force_range(int(UT), 24)
-        min = round((UT - int(UT))*60, 0)
-        if min == 60:
-            hr += 1
-            min = 0
-
-        #10. check corner case https://github.com/SatAgro/suntime/issues/1
-        if hr == 24:
-            hr = 0
-            day += 1
-            
-            if day > calendar.monthrange(year, month)[1]:
-                day = 1
-                month += 1
-
-                if month > 12:
-                    month = 1
-                    year += 1
-
-        #return datetime.datetime(year, month, day, hr, int(min), tzinfo=tz.tzutc())
-        return datetime(year, month, day, hr, int(min), tzinfo=tz.tzutc())
-
-    @staticmethod
-    def _force_range(v, max):
-        # force v to be >= 0 and < max
-        if v < 0:
-            return v + max
-        elif v >= max:
-            return v - max
-
-        return v
-
-
-
-#find date of easter for given year; not accurate for year 1582 or earlier.
-#compared output of 2000-2029 to known list of gregorian (western) Easter
-#dates and output was accurate
-#written with help from https://www.linuxtopia.org/online_books/programming_books/python_programming/python_ch38.html
-def findEasterAfterYear1582(year):
-
-    calculation_method = '1583 or later'
-
-    golden_number = (year % 19) + 1
-    century = (year // 100) + 1 #not technically correct, but this is how the Easter calculation works; counts years that are evenly divisible by 100 as in the prior century
-    corrections_dropped_leap_years = ( (3 * century) // 4) - 12 #e.g. in 1900 Leap Year is dropped
-    corrections_moon = ( ( (8 * century) + 5 ) // 25 ) - 5
-    sunday = ( (5 * year) // 4 ) - corrections_dropped_leap_years - 10
-    epact = ((11 * golden_number) + 20 + corrections_moon - corrections_dropped_leap_years) % 30
-
-    #adjust for special circumstances
-    if ( (epact == 25) & (golden_number > 11) ) | (epact == 24):
-        epact = epact + 1
-
-    full_moon = 44 - epact
-
-    #Easter is the “first Sunday following the first full moon which occurs on
-    #or after March 21.” note -- calendar moon, rather than lunar moon!
-    if (full_moon < 21):
-        full_moon = full_moon + 30
-
-    upcoming_sunday = full_moon + 7 - ( (sunday + full_moon) % 7 )
-
-    if (upcoming_sunday > 31):
-        date = (year, 4, upcoming_sunday - 31, calculation_method)
-    else:
-        date = (year, 3, upcoming_sunday, calculation_method)
-
-    #date is tuple with format (year, month, day, calculation_method)
-    return date
-
-#find date of easter for given year; only accurate for year 1582 or earlier.
-#compared output of 1501-1503 to known list of gregorian (western) Easter
-#dates and output was accurate
-#written with help from https://www.linuxtopia.org/online_books/programming_books/python_programming/python_ch38.html
-def findEasterBeforeYear1583(year):
-
-    calculation_method = '1582 or earlier'
-
-    a = year % 19
-    b = year // 100
-    c = year % 100
-    d = b // 4
-    e = b % 4
-    g = ( (8 * b) + 13) // 25
-    h = ( (19 * a) + b - d - g + 15) % 30
-    m = ( a + (11 * h) ) // 319 
-    i = c // 4
-    k = c % 4
-    f = ( (2 * e) + (2 * i) - k - h + m + 32 ) % 7
-    n = (h - m + f + 90) // 25
-    p = (h - m + f + n + 19) % 32
-
-    date = (year, n, p, calculation_method)
-
-    #date is tuple in format (year, month, day, calulation_method)
-    return date
-
-#comprehensive function to find any easter regardless of year
-#returns a tuple in format (year, month, day, calculation_method)
-def findEaster(year):
-    if year < 1583:
-        return findEasterBeforeYear1583(year)
-    else:
-        return findEasterAfterYear1582(year)
-
-#return the suffix of the ordinal day number. e.g., the "st" in "31st day of March"
-#only works for two-digit or smaller integers
-#only uses the whole number portion of any number passed (won't account for decimals)
-def ordinalSuffix(number):
-
-    #truncate any decimals, and use only last 2 digits of resutling integer
-    number = number // 1 % 100
-
-    if ( (number % 10 == 1) & (number // 10 != 1) ):
-        suffix = 'st'
-    elif ( (number % 10 == 2) & (number // 10 != 1) ):
-        suffix = 'nd'
-    elif ( (number % 10 == 3) & (number // 10 != 1) ):
-        suffix = 'rd'
-    else:
-        suffix = 'th'
-
-    return suffix
-
-
-
-
-def identifyHoliday(dt, hf):
-    if dt in hf['dt'].unique(): return 1
-
-
-
-#used to find fields based on dow value
-def mapDayOfWeekToOrdinalFieldName(dow_number):
-    if   dow_number == 0: return 'mon'
-    elif dow_number == 1: return 'tue'
-    elif dow_number == 2: return 'wed'
-    elif dow_number == 3: return 'thu'
-    elif dow_number == 4: return 'fri'
-    elif dow_number == 5: return 'sat'
-    elif dow_number == 6: return 'sun'
-
-def make_list(var):
-    """
-    Convert a variable to a list with one item (the original variable) if it isn't a list already.
-    :param var: the variable to check.  if it's already a list, do nothing.  else, put it in a list.
-    :return: the variable in a one-item list if it wasnt already a list.
-    """
-    
-    if type(var) is not list:
-        var = [ var ]
-
-    return(var)
-
-def addColumnFromGroupbyOperation(df, new_field_name, field_to_groupby, operate_on, operation):
-    """
-    Calculate sunrise or sunset date.
-    :param df: dataframe that will have the column added from the groupby operation
-    :param new_field_name: name of the field (string) that will be created
-    :param field_to_groupby: field (string) or list of fields (list of strings) to use in the groupby
-    :param operate_on: field (string) or list of fields (list of strings) that will be aggregated (summed, max'd, min'd, etc.)
-    :param operation: the aggregation method (string) such as sum, max, min, etc.
-    :return: df with new column added
-    """
-
-    fields_list = []
-    #fields_list.append(field_to_groupby)
-
-    field_to_groupby = make_list(field_to_groupby)
-
-    for item in field_to_groupby:
-        fields_list.append(item)
-
-    fields_list.append(operate_on)
-
-    if operation == 'count':
-        df[new_field_name] = df.merge(
-            df[fields_list].groupby(field_to_groupby)[operate_on].count().reset_index(),
-            how='inner',
-            on=field_to_groupby,
-            suffixes=('','_r')
-            )[operate_on+'_r']
-    else:
-        
-        #operation = operation + '()'
-        operation = 'np.'+operation
-
-        df[new_field_name] = df.merge(
-            df[fields_list].groupby(field_to_groupby)[operate_on].apply(eval(operation)).reset_index(),
-            how='inner',
-            on=field_to_groupby,
-            suffixes=('','_r')
-            )[operate_on+'_r']
-
-    return df
-
-
-
+#TODO: SET UP LOGGER THAT WRITES TO FILE AND TO SCREEN WITH EASY COMMAND W TIMESTAMPING
+misc_udfs.tprint('calendar table process started')
 
 df = pd.DataFrame()
-
-
 #create base date range
 start_dt='01-01-2020'
 end_dt='12-31-2025'
 
 df['dt'] = pd.date_range(start=start_dt, end=end_dt, freq='D')
-
 
 #year as int
 df['y'] = pd.DatetimeIndex(df['dt']).year
@@ -460,7 +57,6 @@ df['dow'] = df['dt'].dt.dayofweek
 
 #day of year number as int
 df['doy'] = df['dt'].dt.dayofyear
-
 
 #month name (January, February, ...)
 df['m_name'] = df['dt'].dt.month_name()
@@ -508,7 +104,7 @@ df['yh'] = df['y']*10+df['h']
 df['ym_name'] = df['m_name'] + ', ' + df['y'].apply(lambda x: str(x))
 
 #ordinal dom suffix
-df['dom_suffix'] = df['d'].apply(lambda x: ordinalSuffix(x))
+df['dom_suffix'] = df['d'].apply(lambda x: date_udfs.ordinalSuffix(x))
 
 #date name
 df['dt_name'] = df['m_name'] + ' ' + df['d'].apply(lambda x: str(x)) + df['dom_suffix'] + ', ' + df['y'].apply(lambda x: str(x))
@@ -520,20 +116,19 @@ df['is_weekd'] = np.where(df['dow'].isin([0,1,2,3,4,]), 1, 0)
 df['weekdom'] = df[['ym','is_weekd']].groupby('ym')['is_weekd'].cumsum()
 
 #total weekdays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_weekd_in_mo', 'ym', 'is_weekd', 'sum')
-
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_weekd_in_mo', 'ym', 'is_weekd', 'sum')
 
 #total caldays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_cald_in_mo', 'ym', 'dt_int', 'count')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_cald_in_mo', 'ym', 'dt_int', 'count')
 
 #weekdays in year through date
 df['weekdoy'] = df[['y','is_weekd']].groupby('y')['is_weekd'].cumsum()
 
 #total weekdays in year
-df = addColumnFromGroupbyOperation(df, 'tot_weekd_in_y', 'y', 'is_weekd', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_weekd_in_y', 'y', 'is_weekd', 'sum')
 
 #total caldays in year
-df = addColumnFromGroupbyOperation(df, 'tot_cald_in_y', 'y', 'dt_int', 'count')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_cald_in_y', 'y', 'dt_int', 'count')
 
 #is monday (1=True, 0=False)
 df['is_dow_mon'] = (df['dow']==0).astype(int)
@@ -556,54 +151,47 @@ df['is_dow_sat'] = (df['dow']==5).astype(int)
 #is sunday (1=True, 0=False)
 df['is_dow_sun'] = (df['dow']==6).astype(int)
 
+#total mondays in yearmonth
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_mon_in_ym', 'ym', 'is_dow_mon', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_mon_in_ym', 'ym', 'is_dow_mon', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_tue_in_ym', 'ym', 'is_dow_tue', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_tue_in_ym', 'ym', 'is_dow_tue', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_wed_in_ym', 'ym', 'is_dow_wed', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_wed_in_ym', 'ym', 'is_dow_wed', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_thu_in_ym', 'ym', 'is_dow_thu', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_thu_in_ym', 'ym', 'is_dow_thu', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_fri_in_ym', 'ym', 'is_dow_fri', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_fri_in_ym', 'ym', 'is_dow_fri', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_sat_in_ym', 'ym', 'is_dow_sat', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_sat_in_ym', 'ym', 'is_dow_sat', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_sun_in_ym', 'ym', 'is_dow_sun', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_sun_in_ym', 'ym', 'is_dow_sun', 'sum')
-
-
-
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_mon_in_y', 'y', 'is_dow_mon', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_mon_in_y', 'y', 'is_dow_mon', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_tue_in_y', 'y', 'is_dow_tue', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_tue_in_y', 'y', 'is_dow_tue', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_wed_in_y', 'y', 'is_dow_wed', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_wed_in_y', 'y', 'is_dow_wed', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_thu_in_y', 'y', 'is_dow_thu', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_thu_in_y', 'y', 'is_dow_thu', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_fri_in_y', 'y', 'is_dow_fri', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_fri_in_y', 'y', 'is_dow_fri', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_sat_in_y', 'y', 'is_dow_sat', 'sum')
 
 #total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_sat_in_y', 'y', 'is_dow_sat', 'sum')
-
-#total mondays in yearmonth
-df = addColumnFromGroupbyOperation(df, 'tot_sun_in_y', 'y', 'is_dow_sun', 'sum')
-
-
-
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_sun_in_y', 'y', 'is_dow_sun', 'sum')
 
 #mondays of yearmonth through date
 df['dow_mon_om'] = df[['ym','is_dow_mon']].groupby('ym')['is_dow_mon'].cumsum()
@@ -625,9 +213,6 @@ df['dow_sat_om'] = df[['ym','is_dow_sat']].groupby('ym')['is_dow_sat'].cumsum()
 
 #sundays of yearmonth through date
 df['dow_sun_om'] = df[['ym','is_dow_sun']].groupby('ym')['is_dow_sun'].cumsum()
-
-
-
 
 #mondays of year through date
 df['dow_mon_oy'] = df[['y','is_dow_mon']].groupby('y')['is_dow_mon'].cumsum()
@@ -651,21 +236,23 @@ df['dow_sat_oy'] = df[['y','is_dow_sat']].groupby('y')['is_dow_sat'].cumsum()
 df['dow_sun_oy'] = df[['y','is_dow_sun']].groupby('y')['is_dow_sun'].cumsum()
 
 #dow of month based on dow: first find the appropriate col to ref, then grab its value
-df['dow_om'] = 'dow_' + df['dow'].apply(lambda x: mapDayOfWeekToOrdinalFieldName(x)) + '_om'
+df['dow_om'] = 'dow_' + df['dow'].apply(lambda x: date_udfs.mapDayOfWeekToOrdinalFieldName(x)) + '_om'
 df['dow_om'] = df[df['dow_om'].values]
 
 #is last dow of yearmonth based on dow:
-df = addColumnFromGroupbyOperation(df, 'dow_om_max', 'ym', 'dow_om', 'max')
-
+df = df_udfs.addColumnFromGroupbyOperation(df, 'dow_om_max', 'ym', 'dow_om', 'max')
 
 #dow of year based on dow: first find the appropriate col to ref, then grab its value
-df['dow_oy'] = 'dow_' + df['dow'].apply(lambda x: mapDayOfWeekToOrdinalFieldName(x)) + '_oy'
+df['dow_oy'] = 'dow_' + df['dow'].apply(lambda x: date_udfs.mapDayOfWeekToOrdinalFieldName(x)) + '_oy'
 df['dow_oy'] = df[df['dow_oy'].values]
 
 #is holiday (and if so, what is the holiday name)
 #first, identify rules for holidays
 #second, iterate through all rows of the calendar table to find dates that match the rules
 #third, where they match, mark them as a holiday and record the name of the holiday
+
+holiday = holiday.Holiday()
+
 df_standard_holidays = pd.DataFrame(
     columns = ['lit_m','lit_d','rel_m','rel_dow','rel_occur','rel_last','is_literal','holiday_name'],
     data = [
@@ -700,7 +287,7 @@ for i, df_row in df.iterrows():
             index_list.append((i, hf_row['holiday_name']))
 
         #find Easter Sunday
-        if (findEaster(df_row['y'])[0:3] == (df_row['y'], df_row['m'], df_row['d'])):
+        if (holiday.findEaster(df_row['y'])[0:3] == (df_row['y'], df_row['m'], df_row['d'])):
             index_list.append((i, 'Easter Sunday'))
                 
 df['is_holiday']=0
@@ -717,60 +304,61 @@ df['is_d_leapyr'] = np.where(
     )
 
 #is yearmonth a Feb that contains Leap Year day
-df = addColumnFromGroupbyOperation(df, 'is_ym_leapyr', 'ym', 'is_d_leapyr', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'is_ym_leapyr', 'ym', 'is_d_leapyr', 'sum')
 
 #is year a leap year
-df = addColumnFromGroupbyOperation(df, 'is_y_leapyr', 'y', 'is_d_leapyr', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'is_y_leapyr', 'y', 'is_d_leapyr', 'sum')
 
 #first day of month datetime
-df = addColumnFromGroupbyOperation(df, 'first_dom_dt', 'ym', 'dt', 'min')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'first_dom_dt', 'ym', 'dt', 'min')
 
 #first day of month int
-df = addColumnFromGroupbyOperation(df, 'first_dom_int', 'ym', 'dt_int', 'min')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'first_dom_int', 'ym', 'dt_int', 'min')
 
 #last day of month datetime
-df = addColumnFromGroupbyOperation(df, 'last_dom_dt', 'ym', 'dt', 'max')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'last_dom_dt', 'ym', 'dt', 'max')
 
 #last day of month datetime
-df = addColumnFromGroupbyOperation(df, 'last_dom_int', 'ym', 'dt_int', 'max')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'last_dom_int', 'ym', 'dt_int', 'max')
 
 #first day of yearquarter datetime
-df = addColumnFromGroupbyOperation(df, 'first_doyq_dt', 'yq', 'dt', 'min')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doyq_dt', 'yq', 'dt', 'min')
 
 #first day of yearquarter int
-df = addColumnFromGroupbyOperation(df, 'first_doyq_int', 'yq', 'dt_int', 'min')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doyq_int', 'yq', 'dt_int', 'min')
 
 #last day of yearquarter datetime
-df = addColumnFromGroupbyOperation(df, 'last_doyq_dt', 'yq', 'dt', 'max')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doyq_dt', 'yq', 'dt', 'max')
 
 #last day of yearquarter datetime
-df = addColumnFromGroupbyOperation(df, 'last_doyq_int', 'yq', 'dt_int', 'max')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doyq_int', 'yq', 'dt_int', 'max')
 
 #first day of yearhalf datetime
+df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doyh_int', 'yh', 'dt', 'min')
 
 #first day of yearhalf int
-df = addColumnFromGroupbyOperation(df, 'first_doyh_int', 'yh', 'dt_int', 'min')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doyh_int', 'yh', 'dt_int', 'min')
 
 #last day of yearhalf datetime
-df = addColumnFromGroupbyOperation(df, 'last_doyh_dt', 'yh', 'dt', 'max')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doyh_dt', 'yh', 'dt', 'max')
 
 #last day of yearhalf datetime
-df = addColumnFromGroupbyOperation(df, 'last_doyh_int', 'yh', 'dt_int', 'max')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doyh_int', 'yh', 'dt_int', 'max')
 
 #first day of year datetime
-df = addColumnFromGroupbyOperation(df, 'first_doy_dt', 'y', 'dt', 'min')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doy_dt', 'y', 'dt', 'min')
 
 #first day of year int
-df = addColumnFromGroupbyOperation(df, 'first_doy_int', 'y', 'dt_int', 'min')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doy_int', 'y', 'dt_int', 'min')
 
 #last day of year datetime
-df = addColumnFromGroupbyOperation(df, 'last_doy_dt', 'y', 'dt', 'max')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doy_dt', 'y', 'dt', 'max')
 
 #last day of year datetime
-df = addColumnFromGroupbyOperation(df, 'last_doy_int', 'y', 'dt_int', 'max')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doy_int', 'y', 'dt_int', 'max')
 
 #moon phase name (approximate)
-moon = Moon()
+moon = moon.Moon()
 df['moon_phase_name'] = df['dt'].apply(lambda x: moon.phase(moon.day_of_cycle(x))[0])
 
 #moon phase index number as int (approximate)
@@ -785,7 +373,7 @@ df['moon_illum_pct'] = df['dt'].apply(lambda x: moon.illumination(moon.day_of_cy
 #set locale; dallas, tx is lat 32.7, lon -96.8
 cal_lat = 32.7
 cal_lon = -96.8
-sun = Sun(lat=cal_lat, lon=cal_lon)
+sun = sun.Sun(lat=cal_lat, lon=cal_lon)
 
 #sunrise UTC time
 df['sunrise_utc'] = df['dt'].apply(lambda x: sun.get_sunrise_time(date = x))
@@ -809,7 +397,6 @@ df['dark_duration_local'] = timedelta(hours=24) - df['sun_duration_local']
 
 df.to_csv('./temp_csv.csv')
 
-print(datetime.now())
-print('calendar table process completed')
+misc_udfs.tprint('Calendar table process completed')
 
-print(df.dtypes)
+misc_udfs.tprint(message=df.dtypes, multiline_header='Printing the calendar table columns and datatypes:')
