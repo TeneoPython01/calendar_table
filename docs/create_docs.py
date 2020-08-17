@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-def createColumnDescriptionHTML(cal_df, path_to_desc_csv, output_html_path):
+def createColumnDescriptions(cal_df, path_to_desc_csv):
     #load descriptions from csv
     col_desc_df = pd.read_csv(path_to_desc_csv)
 
@@ -19,10 +19,12 @@ def createColumnDescriptionHTML(cal_df, path_to_desc_csv, output_html_path):
     #merge the descriptions into the latest column list
     cal_merged_df = cal_col_df.merge(col_desc_df, how='left', on='col_name')
 
-    df_html = cal_merged_df.to_html()
-
-    html_file = open(output_html_path, 'w')
-    n = html_file.write(df_html)
-    html_file.close()
+    cal_merged_df.fillna('', inplace=True)
 
     return cal_merged_df
+
+def writeHTMLToFile(htmlString, outputPath):
+
+        html_file = open(outputPath, 'wt')
+        n = html_file.write(htmlString)
+        html_file.close()

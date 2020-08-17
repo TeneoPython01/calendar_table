@@ -35,7 +35,7 @@ def html_header(my_title=''):
 
 #FUNCTION RETURNS HTML CODE FOR THE STYLE TAG PORTION OF
 #AN HTML FILE
-def html_style_header():
+def html_style_header(my_title=''):
 
     html_script = """
     <!-- CSS goes in the document HEAD or added to your external stylesheet -->
@@ -72,7 +72,9 @@ def html_style_header():
 
     </style>
     </HEAD>
-    """
+    <BODY>
+    
+    """ + '<H3>' + my_title + '</H3><BR>'
     
     return html_script
 
@@ -105,7 +107,7 @@ def df_to_html(my_title, df):
 
     html_script = ''
     html_script = html_script + html_header(my_title)
-    html_script = html_script + html_style_header()
+    html_script = html_script + html_style_header(my_title)
     html_script = html_script + html_from_df(df)
     html_script = html_script + html_footer()
     

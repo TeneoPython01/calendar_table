@@ -18,7 +18,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 from dateutil import tz
-from udfs import moon, sun, holiday, date_udfs, df_udfs, misc_udfs
+from udfs import moon, sun, holiday, date_udfs, df_udfs, html_udfs, misc_udfs
 from docs import create_docs
 
 #SET DISPLAY OPTIONS FOR PRINTING TO SCREEN
@@ -335,7 +335,7 @@ df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doyq_dt', 'yq', 'dt', 'max'
 df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doyq_int', 'yq', 'dt_int', 'max')
 
 #first day of yearhalf datetime
-df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doyh_int', 'yh', 'dt', 'min')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doyh_dt', 'yh', 'dt', 'min')
 
 #first day of yearhalf int
 df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doyh_int', 'yh', 'dt_int', 'min')
@@ -403,5 +403,15 @@ misc_udfs.tprint('Calendar table process completed')
 #misc_udfs.tprint(message=df.dtypes, multiline_header='Printing the calendar table columns and datatypes:')
 
 #generate the HTML support document that explains each column in tha calendar_table
-create_docs.createColumnDescriptionHTML(df, './docs/input/desc.csv', './docs/col_descriptions.html')#.to_csv('./docs/')
+#create_docs.createColumnDescriptionHTML(df, './docs/input/desc.csv', './docs/col_descriptions.html')#.to_csv('./docs/')
+create_docs.writeHTMLToFile(
+    html_udfs.df_to_html(
+        'Documentation: Calendar Table Field Information',
+        create_docs.createColumnDescriptions(
+            df,
+            './docs/input/desc.csv'
+            )
+        ),
+    './docs/col_descriptions.html'
+    )
 misc_udfs.tprint('Documention about column descriptions and datatypes loaded to ./docs/col_descriptions.html')

@@ -25,7 +25,12 @@ Additionally, some interesting and unique data elements include:
 <li> length of daylight / darkness each day/evening
 </ul>
 
-Look at the .csv in the git repo to see all of the columns!
+For more information about the date dimensions and fields available, see these supporting documents:
+<ul>
+<li> Documentation: <a href="./docs/col_descriptions.html">Full column list with datatypes and descriptions</a>
+<li> Documentation: <a href="./output.csv">Sample output</a>
+</ul>
+
 
 <h3>
 WHY CREATE A CALENDAR TABLE / DATE DIMENSION TABLE?
