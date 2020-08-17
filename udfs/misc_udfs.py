@@ -1,5 +1,44 @@
 from datetime import datetime
-#import string
+import sys, os
+
+def getPathAndFilename():
+    """
+    :returns: a tuple with [0] the full path including
+              filename of the script being run as well
+              as [1] the path including filename
+              starting with the directory that the
+              script is in.
+    """
+
+    return (os.path.abspath(sys.argv[0]).split('/'),
+            '/'.join(os.path.abspath(sys.argv[0]).split('/')[-2:])
+            )
+
+def getUser():
+    """
+    :returns: the current user
+    """
+
+    return os.getlogin()
+    
+
+def buildMultilineHeader():
+    """
+    :returns: multiline string with a header containing information about the script
+    """
+
+    header_string = """====================
+        o PATH OF SCRIPT: {}
+        o USER RUNNING IT: {}
+    ====================""".format(getPathAndFilename()[1], getUser())
+
+    return header_string
+
+def printHeader(use_as_method=1):
+    if use_as_method==1:
+        tprint(buildMultilineHeader(), 'script metadata:')
+
+    return 0
 
 def count_string_lines(s):
     return len(s.split('\n'))

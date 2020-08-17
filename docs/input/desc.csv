@@ -96,3 +96,4 @@ sunrise_local,sunrise local (coordinates),time of sunrise on date at lat/lon coo
 sunset_local,sunset local (coordinates),time of sunset on date at lat/lon coords provided,
 sun_duration_local,sun duration local (coordinates),length of daylight on date (time between sunrise and sunset) at lat/lon coords provided,
 dark_duration_local,dark duration local (coordinates),,
+created_on,created on,date and time stamp when this calendar table was created by the scripts,
