@@ -28,7 +28,7 @@ Additionally, some interesting and unique data elements include:
 For more information about the date dimensions and fields available, see these supporting documents:
 <ul>
 <li> Documentation: <a href="./docs/col_descriptions.html">Full column list with datatypes and descriptions</a> (download and then open with a browser)
-<li> Documentation: <a href="./output.csv">Sample output</a>
+<li> Documentation: <a href="./temp_csv.csv">Sample output</a>
 </ul>
 
 
