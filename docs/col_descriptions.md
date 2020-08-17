@@ -1,0 +1,730 @@
+
+    <!DOCTYPE html>
+    <HTML>
+        <HEAD>
+            <TITLE>
+Documentation: Calendar Table Field Information</TITLE>
+    <!-- CSS goes in the document HEAD or added to your external stylesheet -->
+    <style type="text/css">
+    table.gridtable {
+        font-family: verdana,arial,sans-serif;
+        font-size:11px;
+        border-width: 1px;
+        border-color: #666666;
+        border-collapse: collapse;
+    }
+    table.gridtable th{
+        border-width: 1px;
+        padding: 18px;
+        border-style: solid;
+        border-color: #666666;
+        background-color: #dedede;
+    }
+    table.gridtable td{
+        border-width: 1px;
+        padding: 6px;
+        border-style: solid;
+        border-color: #666666;
+        background-color: #ffffff;
+    }
+    /* Define the default color for all the table rows */
+    .gridtable tr{
+        background: #b8d1f3;
+    }
+    /* Define the hover highlight color for the table row */
+    .gridtable td:hover {
+        background-color: #ffff99;
+    }
+
+    </style>
+    </HEAD>
+    <BODY>
+    
+    <H3>Documentation: Calendar Table Field Information</H3><BR><table class="gridtable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>col_name</th>
+      <th>col_dtype</th>
+      <th>col_name_full</th>
+      <th>col_description</th>
+      <th>col_example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>dt</td>
+      <td>datetime64[ns]</td>
+      <td>date</td>
+      <td>primary key from which all metadata and dimension data is referencing</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>y</td>
+      <td>int64</td>
+      <td>year</td>
+      <td>year number</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>m</td>
+      <td>int64</td>
+      <td>month</td>
+      <td>month number</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>d</td>
+      <td>int64</td>
+      <td>day</td>
+      <td>calendar day number</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>ym</td>
+      <td>int64</td>
+      <td>yearmonth</td>
+      <td>year and month in YYYYMM format</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>dt_int</td>
+      <td>int64</td>
+      <td>date as integer</td>
+      <td>year, month, and calendar day in YYYYMMDD format as integer</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>dow_name</td>
+      <td>object</td>
+      <td>day of week name</td>
+      <td>the name of the day of week</td>
+      <td>(e.g., "Monday", "Tuesday", etc.)</td>
+    </tr>
+    <tr>
+      <td>dow</td>
+      <td>int64</td>
+      <td>day of week</td>
+      <td>day of week number</td>
+      <td>(e.g., 0=Monday, 1=Tuesday, etc.)</td>
+    </tr>
+    <tr>
+      <td>doy</td>
+      <td>int64</td>
+      <td>day of year</td>
+      <td>calendar day number of the year</td>
+      <td>(e.g., Jan31 = 31, Feb1 = 32, etc.)</td>
+    </tr>
+    <tr>
+      <td>m_name</td>
+      <td>object</td>
+      <td>month name</td>
+      <td>the name of the month</td>
+      <td>(e.g., "January", "February", etc.)</td>
+    </tr>
+    <tr>
+      <td>iso_week</td>
+      <td>int64</td>
+      <td>iso week number</td>
+      <td>the week number using ISO conventions, which under certain conditions will count the first partial week of a year as week number zero</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>norm_week</td>
+      <td>int32</td>
+      <td>normal week number</td>
+      <td>the week number using a custom convention that defines the first partial week of the year as week number 1 and increments the week number each Sunday</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>q</td>
+      <td>int64</td>
+      <td>quarter</td>
+      <td>the quarter number within the year, from 1 to 4, using the standard calendar quarters</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>yq</td>
+      <td>int64</td>
+      <td>yearquarter</td>
+      <td>the year and quarter number in YYYYQ format</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>h</td>
+      <td>int64</td>
+      <td>half (of year)</td>
+      <td>the half number within the year, from 1 to 2, using standard calendar quarters</td>
+      <td>(Q1 and Q2 = half 1, Q3 and Q4 = half 2)</td>
+    </tr>
+    <tr>
+      <td>yh</td>
+      <td>int64</td>
+      <td>yearhalf</td>
+      <td>the year and half number in YYYYH format</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>ym_name</td>
+      <td>object</td>
+      <td>yearmonth name</td>
+      <td>the month name spelled out with the year</td>
+      <td>(e.g., "January, 2018")</td>
+    </tr>
+    <tr>
+      <td>dom_suffix</td>
+      <td>object</td>
+      <td>day of month suffix</td>
+      <td>the appropriate suffix for the calendar number within the month</td>
+      <td>(e.g., March 3 = "rd" for 3rd, April 1 = "st" for 1st, etc.)</td>
+    </tr>
+    <tr>
+      <td>dt_name</td>
+      <td>object</td>
+      <td>date name</td>
+      <td>the month name spelled out with the calendar day number, the appropriate suffix, a comma, and the year</td>
+      <td>(e.g., "June 22nd, 1999")</td>
+    </tr>
+    <tr>
+      <td>is_weekd</td>
+      <td>int32</td>
+      <td>is weekday?</td>
+      <td>is this a weekend?</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>weekdom</td>
+      <td>int32</td>
+      <td>weekday of month</td>
+      <td>weekday number within the month; weekends carry the prior weekday number forward</td>
+      <td>(e.g. Fri Aug 14 2020 through Sun Aug 16 2020 = 10; Mon Aug 17 2020 = 11, etc.)</td>
+    </tr>
+    <tr>
+      <td>tot_weekd_in_mo</td>
+      <td>int64</td>
+      <td>total weekdays in month</td>
+      <td>total weekdays in the month</td>
+      <td>(e.g., Aug 2020 = 21 weekdays long)</td>
+    </tr>
+    <tr>
+      <td>tot_cald_in_mo</td>
+      <td>int64</td>
+      <td>total calendar days in month</td>
+      <td>total calendar day in the month</td>
+      <td>(e.g. Aug 2020 = 31 calendar days long)</td>
+    </tr>
+    <tr>
+      <td>weekdoy</td>
+      <td>int32</td>
+      <td>weekday of year</td>
+      <td>weekday number within the year; weekends carry the prior weekday number forward</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_weekd_in_y</td>
+      <td>int64</td>
+      <td>total weekdays in year</td>
+      <td>total weekdays in the year</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_cald_in_y</td>
+      <td>int64</td>
+      <td>total calendar days in year</td>
+      <td>total calendar days in the year</td>
+      <td>(e.g., usually 365, except on Leap Year with certain special exceptions)</td>
+    </tr>
+    <tr>
+      <td>is_dow_mon</td>
+      <td>int32</td>
+      <td>is day of week Monday?</td>
+      <td>is the date a Monday?</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>is_dow_tue</td>
+      <td>int32</td>
+      <td>is day of week Tuesday?</td>
+      <td>is the date a Tuesday?</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>is_dow_wed</td>
+      <td>int32</td>
+      <td>is day of week Wednesday?</td>
+      <td>is the date a Wednesday?</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>is_dow_thu</td>
+      <td>int32</td>
+      <td>is day of week Thursday?</td>
+      <td>is the date a Thursday?</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>is_dow_fri</td>
+      <td>int32</td>
+      <td>is day of week Friday?</td>
+      <td>is the date a Friday?</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>is_dow_sat</td>
+      <td>int32</td>
+      <td>is day of week Saturday?</td>
+      <td>is the date a Saturday?</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>is_dow_sun</td>
+      <td>int32</td>
+      <td>is day of week Sunday?</td>
+      <td>is the date a Sunday?</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>tot_mon_in_ym</td>
+      <td>int64</td>
+      <td>total Mondays in yearmonth</td>
+      <td>total number of Mondays in the date's yearmonth</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_tue_in_ym</td>
+      <td>int64</td>
+      <td>total Tuesdays in yearmonth</td>
+      <td>total number of Tuesdays in the date's yearmonth</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_wed_in_ym</td>
+      <td>int64</td>
+      <td>total Wednesdays in yearmonth</td>
+      <td>total number of Wednesdays in the date's yearmonth</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_thu_in_ym</td>
+      <td>int64</td>
+      <td>total Thursdays in yearmonth</td>
+      <td>total number of Thursdays in the date's yearmonth</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_fri_in_ym</td>
+      <td>int64</td>
+      <td>total Fridays in yearmonth</td>
+      <td>total number of Fridays in the date's yearmonth</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_sat_in_ym</td>
+      <td>int64</td>
+      <td>total Saturdays in yearmonth</td>
+      <td>total number of Saturdays in the date's yearmonth</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_sun_in_ym</td>
+      <td>int64</td>
+      <td>total Sundays in yearmonth</td>
+      <td>total number of Sundays in the date's yearmonth</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_mon_in_y</td>
+      <td>int64</td>
+      <td>total Mondays in year</td>
+      <td>total number of Mondays in the date's year</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_tue_in_y</td>
+      <td>int64</td>
+      <td>total Tuesdays in year</td>
+      <td>total number of Tuesdays in the date's year</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_wed_in_y</td>
+      <td>int64</td>
+      <td>total Wednesdays in year</td>
+      <td>total number of Wednesdays in the date's year</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_thu_in_y</td>
+      <td>int64</td>
+      <td>total Thursdays in year</td>
+      <td>total number of Thursdays in the date's year</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_fri_in_y</td>
+      <td>int64</td>
+      <td>total Fridays in year</td>
+      <td>total number of Fridays in the date's year</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_sat_in_y</td>
+      <td>int64</td>
+      <td>total Saturdays in year</td>
+      <td>total number of Saturdays in the date's year</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>tot_sun_in_y</td>
+      <td>int64</td>
+      <td>total Sundays in year</td>
+      <td>total number of Sundays in the date's year</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>dow_mon_om</td>
+      <td>int32</td>
+      <td>day of week Monday of month</td>
+      <td>number of Mondays that have occurred within the yearmonth up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_tue_om</td>
+      <td>int32</td>
+      <td>day of week Tuesday of month</td>
+      <td>number of Tuesdays that have occurred within the yearmonth up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_wed_om</td>
+      <td>int32</td>
+      <td>day of week Wednesday of month</td>
+      <td>number of Wednesdays that have occurred within the yearmonth up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_thu_om</td>
+      <td>int32</td>
+      <td>day of week Thursday of month</td>
+      <td>number of Thursdays that have occurred within the yearmonth up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_fri_om</td>
+      <td>int32</td>
+      <td>day of week Friday of month</td>
+      <td>number of Fridays that have occurred within the yearmonth up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_sat_om</td>
+      <td>int32</td>
+      <td>day of week Saturday of month</td>
+      <td>number of Saturdays that have occurred within the yearmonth up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_sun_om</td>
+      <td>int32</td>
+      <td>day of week Sunday of month</td>
+      <td>number of Sundays that have occurred within the yearmonth up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_mon_oy</td>
+      <td>int32</td>
+      <td>day of week Monday of year</td>
+      <td>number of Mondays that have occurred within the year up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_tue_oy</td>
+      <td>int32</td>
+      <td>day of week Tuesday of year</td>
+      <td>number of Tuesdays that have occurred within the year up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_wed_oy</td>
+      <td>int32</td>
+      <td>day of week Wednesday of year</td>
+      <td>number of Wednesdays that have occurred within the year up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_thu_oy</td>
+      <td>int32</td>
+      <td>day of week Thursday of year</td>
+      <td>number of Thursdays that have occurred within the year up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_fri_oy</td>
+      <td>int32</td>
+      <td>day of week Friday of year</td>
+      <td>number of Fridays that have occurred within the year up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_sat_oy</td>
+      <td>int32</td>
+      <td>day of week Saturday of year</td>
+      <td>number of Saturdays that have occurred within the year up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_sun_oy</td>
+      <td>int32</td>
+      <td>day of week Sunday of year</td>
+      <td>number of Sundays that have occurred within the year up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_om</td>
+      <td>int32</td>
+      <td>day of week of month</td>
+      <td>given the date's "day of week", this is the number of occurrences that have occurred within the yearmonth up to and including the date</td>
+      <td>(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>dow_om_max</td>
+      <td>int64</td>
+      <td>day of week of month max</td>
+      <td>given the date's "day of week", this is the total number of occurrences that will occurr by the end of the yearmonth</td>
+      <td>(e.g., if date is Aug 16 2020, which is a Sunday, then return 5 because there are 5 by the end of the yearmonth)</td>
+    </tr>
+    <tr>
+      <td>dow_oy</td>
+      <td>int32</td>
+      <td>day of week of year</td>
+      <td>given the date's "day of week", this is the number of occurrences that have occurred within the yearmonth up to and including the date</td>
+      <td>(e.g., if date is Feb 9 2020, which is a Sunday, then return 6 because it is the 6th Sunday of the year)</td>
+    </tr>
+    <tr>
+      <td>is_holiday</td>
+      <td>int64</td>
+      <td>is holiday?</td>
+      <td>is date a holiday?</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>holiday</td>
+      <td>object</td>
+      <td>holiday</td>
+      <td>if the date is a holiday, then show the name of the holiday</td>
+      <td>(e.g., "New Year's Day", "Christmas Day")</td>
+    </tr>
+    <tr>
+      <td>is_d_leapyr</td>
+      <td>int32</td>
+      <td>is day leap year?</td>
+      <td>is the date Leap Year (the day, as in Feb 29th)?</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>is_ym_leapyr</td>
+      <td>int64</td>
+      <td>is yearmonth leap year?</td>
+      <td>is the date in a February containing a Leap Year (Feb 29th)?</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>is_y_leapyr</td>
+      <td>int64</td>
+      <td>is year leap year?</td>
+      <td>is the date in a year containing a Leap Year (Feb 29th)?</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>first_dom_dt</td>
+      <td>datetime64[ns]</td>
+      <td>first day of month date</td>
+      <td>first day of the yearmonth as a date</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>first_dom_int</td>
+      <td>int64</td>
+      <td>first day of month int</td>
+      <td>first day of the yearmonth as an int (YYYYMMDD)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>last_dom_dt</td>
+      <td>datetime64[ns]</td>
+      <td>last day of month date</td>
+      <td>last day of the yearmonth as a date</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>last_dom_int</td>
+      <td>int64</td>
+      <td>last day of month int</td>
+      <td>last day of the yearmonth as an int (YYYYMMDD)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>first_doyq_dt</td>
+      <td>datetime64[ns]</td>
+      <td>first day of yearquarter date</td>
+      <td>first day of the yearquarter as a date</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>first_doyq_int</td>
+      <td>int64</td>
+      <td>first day of yearquarter int</td>
+      <td>first day of the yearquarter as an int (YYYYMMDD)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>last_doyq_dt</td>
+      <td>datetime64[ns]</td>
+      <td>last day of yearquarter date</td>
+      <td>last day of the yearquarter as a date</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>last_doyq_int</td>
+      <td>int64</td>
+      <td>last day of yearquarter int</td>
+      <td>last day of the yearquarter as an int (YYYYMMDD)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>first_doyh_int</td>
+      <td>int64</td>
+      <td>first day of year half (of year) int</td>
+      <td>first day of the yearhalf as an int (YYYYMMDD)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>last_doyh_dt</td>
+      <td>datetime64[ns]</td>
+      <td>last day of year half (of year) date</td>
+      <td>last day of the yearhalf as a date</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>last_doyh_int</td>
+      <td>int64</td>
+      <td>last day of year half (of year) int</td>
+      <td>last day of the yearhalf as an int (YYYYMMDD)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>first_doy_dt</td>
+      <td>datetime64[ns]</td>
+      <td>first day of year date</td>
+      <td>first day of the year as a date</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>first_doy_int</td>
+      <td>int64</td>
+      <td>first day of year int</td>
+      <td>first day of the year as an int (YYYYMMDD)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>last_doy_dt</td>
+      <td>datetime64[ns]</td>
+      <td>last day of year date</td>
+      <td>last day of the year as a date</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>last_doy_int</td>
+      <td>int64</td>
+      <td>last day of year int</td>
+      <td>last day of the year as an int (YYYYMMDD)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>moon_phase_name</td>
+      <td>object</td>
+      <td>moon phase name</td>
+      <td>moon phase name</td>
+      <td>(e.g., "Full Moon", "New Moon", etc.)</td>
+    </tr>
+    <tr>
+      <td>moon_phase_index_int</td>
+      <td>int64</td>
+      <td>moon phase index integer</td>
+      <td>moon phase represented as an integer index value (1-8, discrete)</td>
+      <td>(e.g., Full Moon = 1, etc.)</td>
+    </tr>
+    <tr>
+      <td>moon_phase_index_full</td>
+      <td>float64</td>
+      <td>moon phase index full</td>
+      <td>moon phase represented as a float index value (1-8, continuous) where decimals reflect relative distance between moon phases</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>moon_illum_pct</td>
+      <td>float64</td>
+      <td>moon illumination percent</td>
+      <td>percentage of moon illuminated</td>
+      <td>(e.g., 0% = new moon; 100% = full moon, etc.)</td>
+    </tr>
+    <tr>
+      <td>sunrise_utc</td>
+      <td>datetime64[ns, tzutc()]</td>
+      <td>sunrise UTC (timezone)</td>
+      <td>time of sunrise on date at origin of UTC timezone</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>sunset_utc</td>
+      <td>datetime64[ns, tzutc()]</td>
+      <td>sunset UTC (timezone)</td>
+      <td>time of sunset on date at origin of UTC timezone</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>sun_duration_utc</td>
+      <td>timedelta64[ns]</td>
+      <td>sun duration UTC (timezone)</td>
+      <td>length of daylight on date (time between sunrise and sunset) at origin of UTC timezone</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>dark_duration_utc</td>
+      <td>timedelta64[ns]</td>
+      <td>dark duration UTC (timezone)</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>sunrise_local</td>
+      <td>datetime64[ns, tzlocal()]</td>
+      <td>sunrise local (coordinates)</td>
+      <td>time of sunrise on date at lat/lon coords provided</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>sunset_local</td>
+      <td>datetime64[ns, tzlocal()]</td>
+      <td>sunset local (coordinates)</td>
+      <td>time of sunset on date at lat/lon coords provided</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>sun_duration_local</td>
+      <td>timedelta64[ns]</td>
+      <td>sun duration local (coordinates)</td>
+      <td>length of daylight on date (time between sunrise and sunset) at lat/lon coords provided</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>dark_duration_local</td>
+      <td>timedelta64[ns]</td>
+      <td>dark duration local (coordinates)</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+    </BODY>
+    </HTML>
+    
