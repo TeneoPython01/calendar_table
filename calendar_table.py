@@ -1,16 +1,9 @@
 '''
 PURPOSE:
-Quickly and easily generate a calendar
-table with many columns of date dimensions
-and metadata. Output to dataframe or CSV
-to ingest into a database or for use in
-an application like Excel or PowerBI.
-
-See readme.md in git repo for more info
-
-ABOUT AUTHOR:
-Contact me at https://github.com/TeneoPython01
-
+Quickly and easily generate a calendar table with many columns of date dimensions
+and metadata. Output to dataframe or CSV to ingest into a database or for use in
+an application like Excel or PowerBI. See readme.md in git repo for more info @
+https://github.com/TeneoPython01
 '''
 
 import math
@@ -257,59 +250,19 @@ df = df_udfs.addColumnFromGroupbyOperation(df, 'dow_om_max', 'ym', 'dow_om', 'ma
 df['dow_oy'] = 'dow_' + df['dow'].apply(lambda x: date_udfs.mapDayOfWeekToOrdinalFieldName(x)) + '_oy'
 df['dow_oy'] = df[df['dow_oy'].values]
 
-#is holiday (and if so, what is the holiday name)
-#   o first, identify rules for holidays
-#   o second, iterate through all rows of the calendar table
-#     to find dates that match the rules
-#   o third, where they match, mark them as a holiday and
-#     record the name of the holiday
+#add the rules for holidays that are not workdays in the calendar table
+holiday_obj = holiday.Holiday()
+holiday_obj.addHolidayByRule(literal_month=1, literal_d=1, holiday_name="New Year's Day")
+holiday_obj.addHolidayByRule(relative_month=5, relative_dow=0, relative_is_last_occurrence=1, holiday_name="Memorial Day")
+holiday_obj.addHolidayByRule(literal_month=7, literal_d=4, holiday_name="Fourth of July")
+holiday_obj.addHolidayByRule(relative_month=9, relative_dow=0, relative_occurrence=1, holiday_name="Labor Day")
+holiday_obj.addHolidayByRule(relative_month=11, relative_dow=3, relative_occurrence=4, holiday_name="Thanksgiving")
+holiday_obj.addHolidayByRule(literal_month=12, literal_d=25, holiday_name="Christmas Day")
+holiday_obj.addEaster()
+holiday_obj.createHolidayFrame()
 
-#TODO: modularize the rule-based holiday identification process
-
-holiday = holiday.Holiday()
-
-df_standard_holidays = pd.DataFrame(
-    columns = ['lit_m','lit_d','rel_m','rel_dow','rel_occur','rel_last','is_literal','holiday_name'],
-    data = [
-        [ 1, 1,-1,-1,-1,-1, 1, "New Year's Day"], #jan 1
-        [-1,-1, 5, 0,-1, 1, 0, 'Memorial Day'], # last monday in may
-        [ 7, 4,-1,-1,-1,-1, 1, 'Fourth of July'], #jul 4
-        [-1,-1, 9, 0, 1, 0, 0, 'Labor Day'], # 1st monday in sep
-        [-1,-1,11, 3, 4, 0, 0, 'Thanksgiving'], #4th thursday in nov
-        [12,25,-1,-1,-1,-1, 1, 'Christmas Day'] #dec 25
-        ]
-    )
-
-index_list = []
-
-for i, df_row in df.iterrows():
-    for j, hf_row in df_standard_holidays.iterrows():
-
-        #find holidays based on a set literal month and day (e.g., "Christmas Day is always on December 25th"
-        if (hf_row['is_literal'] == 1) & (df_row['m'] == hf_row['lit_m']) & (df_row['d'] == hf_row['lit_d']):
-            index_list.append((i, hf_row['holiday_name']))
-
-        #find holidays based on a relative month and day (e.g., "Thanksgiving is the 4th Thursday in November")
-        if (hf_row['is_literal'] == 0) & (df_row['m'] == hf_row['rel_m']) & (df_row['dow'] == hf_row['rel_dow']) & (df_row['dow_om'] == hf_row['rel_occur']):
-            index_list.append((i, hf_row['holiday_name']))
-
-        #find holidays based on being the last dow in a month (e.g., "Memorial Day is the last Monday in May")
-        if (hf_row['is_literal'] == 0) & \
-        (hf_row['rel_last'] == 1) & \
-        (df_row['m'] == hf_row['rel_m']) & \
-        (df_row['dow'] == hf_row['rel_dow']) & \
-        (df_row['dow_om'] == df_row['dow_om_max']):
-            index_list.append((i, hf_row['holiday_name']))
-
-        #find Easter Sunday
-        if (holiday.findEaster(df_row['y'])[0:3] == (df_row['y'], df_row['m'], df_row['d'])):
-            index_list.append((i, 'Easter Sunday'))
-                
-df['is_holiday']=0
-df['holiday']=''
-for i in index_list:
-    df['is_holiday'].at[i[0]] = 1
-    df['holiday'].at[i[0]] = i[1]
+#is_holiday and holiday name
+df = holiday_obj.identifyHolidays(df)
 
 #is day Leap Year day
 df['is_d_leapyr'] = np.where(
@@ -416,13 +369,8 @@ misc_udfs.tprint('Calendar table process completed for ' + start_dt + ' through 
 
 #generate the HTML support document that explains each column in tha calendar_table
 create_docs.writeHTMLToFile(
-    html_udfs.df_to_html(
-        'Documentation: Calendar Table Field Information',
-        create_docs.createColumnDescriptions(
-            df,
-            './docs/input/desc.csv'
-            )
-        ),
-    './docs/col_descriptions.html'
-    )
+    html_udfs.df_to_html('Documentation: Calendar Table Field Information',
+        create_docs.createColumnDescriptions(df, './docs/input/desc.csv')
+    ),'./docs/col_descriptions.html')
+
 misc_udfs.tprint('Documention about column descriptions and datatypes loaded to ./docs/col_descriptions.html')
