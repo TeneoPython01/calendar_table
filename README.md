@@ -1,3 +1,5 @@
+<b>This is the best calendar_table with the most columns of interesting date dimensions you'll ever find!</b><br>
+
 <h3>
 PURPOSE:
 </h3>
