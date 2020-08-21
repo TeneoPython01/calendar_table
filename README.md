@@ -1,3 +1,5 @@
+<b>This is the best calendar_table with the most columns of interesting date dimensions you'll ever find!</b><br>
+
 <h3>
 PURPOSE:
 </h3>
@@ -27,8 +29,8 @@ Additionally, some interesting and unique data elements include:
 
 For more information about the date dimensions and fields available, see these supporting documents:
 <ul>
-<li> Documentation: <a href="./docs/col_descriptions.html">Full column list with datatypes and descriptions</a> (download and then open with a browser)
-<li> Documentation: <a href="./temp_csv.csv">Sample output</a> (download and view with CSV viewer, like Excel)
+<li> Documentation: <a href="./docs/col_descriptions.csv">Full column list with datatypes and descriptions</a>
+<li> Documentation: <a href="./calendar_table_output.csv">Sample output</a> (download and view in a CSV viewer like Excel)
 </ul>
 
 
