@@ -107,4 +107,4 @@
 105,sunset_local,"datetime64[ns, tzlocal()]",sunset local (coordinates),time of sunset on date at lat/lon coords provided,
 106,sun_duration_local,timedelta64[ns],sun duration local (coordinates),length of daylight on date (time between sunrise and sunset) at lat/lon coords provided,
 107,dark_duration_local,timedelta64[ns],dark duration local (coordinates),amount of time spent without daylight between midnight in the AM and midnight in the PM,
-108,created_on,object,created on,date and time stamp when this calendar table was created by the scripts,
+108,created_on,datetime64[ns],created on,date and time stamp when this calendar table was created by the scripts,
