@@ -122,8 +122,14 @@ df['weekdom'] = df[['ym','is_weekd']].groupby('ym')['is_weekd'].cumsum()
 #total weekdays in yearmonth
 df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_weekd_in_mo', 'ym', 'is_weekd', 'sum')
 
+#weekdays remaining in ym
+df['weekd_remain_ym'] = df['tot_weekd_in_mo'] - df['weekdom']
+
 #total caldays in yearmonth
 df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_cald_in_mo', 'ym', 'dt_int', 'count')
+
+#calendar days remaining in yearmonth
+df['cald_remain_ym'] = df['tot_cald_in_mo'] - df['d']
 
 #weekdays in year through date
 df['weekdoy'] = df[['y','is_weekd']].groupby('y')['is_weekd'].cumsum()
@@ -131,8 +137,14 @@ df['weekdoy'] = df[['y','is_weekd']].groupby('y')['is_weekd'].cumsum()
 #total weekdays in year
 df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_weekd_in_y', 'y', 'is_weekd', 'sum')
 
+#weekdays remaining in year
+df['weekd_remain_y'] = df['tot_weekd_in_y'] - df['weekdoy']
+
 #total caldays in year
 df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_cald_in_y', 'y', 'dt_int', 'count')
+
+#calendar days remaining in year
+df['cald_remain_y'] = df['tot_cald_in_y'] - df['doy']
 
 #is monday (1=True, 0=False)
 df['is_dow_mon'] = (df['dow']==0).astype(int)
@@ -261,8 +273,29 @@ holiday_obj.addHolidayByRule(literal_month=12, literal_d=25, holiday_name="Chris
 holiday_obj.addEaster()
 holiday_obj.createHolidayFrame()
 
-#is_holiday and holiday name
+#is holiday and holiday name
 df = holiday_obj.identifyHolidays(df)
+
+#is workday
+df['is_workd'] = np.where( (df['is_weekd']==1) & (df['is_holiday']==0), 1, 0)
+
+#workday of month
+df['workdom'] = df[['ym','is_workd']].groupby('ym')['is_workd'].cumsum()
+
+#total workdays in month
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_workdom', 'ym', 'is_workd', 'sum')
+
+#workdays remaining in yearmonth
+df['workd_remain_ym'] = df['tot_workdom'] - df['workdom']
+
+#workday of year
+df['workdoy'] = df[['y','is_workd']].groupby('y')['is_workd'].cumsum()
+
+#total workdays in year
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_workdoy', 'y', 'is_workd', 'sum')
+
+#workdays remaining in yearmonth
+df['workd_remain_y'] = df['tot_workdoy'] - df['workdoy']
 
 #is day Leap Year day
 df['is_d_leapyr'] = np.where(
@@ -366,6 +399,9 @@ df['created_on'] = datetime.now
 #save the calendar table to a CSV file
 df.to_csv('./calendar_table_output.csv')
 misc_udfs.tprint('Calendar table process completed for ' + start_dt + ' through ' + end_dt + ' inclusive')
+
+#generate the CSV support document that
+create_docs.createColumnDescriptions(df, './docs/input/desc.csv').to_csv('./docs/col_descriptions.csv')
 
 #generate the HTML support document that explains each column in tha calendar_table
 create_docs.writeHTMLToFile(

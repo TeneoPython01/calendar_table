@@ -206,11 +206,25 @@ Documentation: Calendar Table Field Information</TITLE>
       <td>(e.g., Aug 2020 = 21 weekdays long)</td>
     </tr>
     <tr>
+      <td>weekd_remain_ym</td>
+      <td>int64</td>
+      <td>weekdays remaining in yearmonth</td>
+      <td>number of weekdays until the yearmonth ends</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>tot_cald_in_mo</td>
       <td>int64</td>
       <td>total calendar days in month</td>
       <td>total calendar day in the month</td>
       <td>(e.g. Aug 2020 = 31 calendar days long)</td>
+    </tr>
+    <tr>
+      <td>cald_remain_ym</td>
+      <td>int64</td>
+      <td>calendar days remaining in yearmonth</td>
+      <td>number of calendar days left in the yearmonth</td>
+      <td></td>
     </tr>
     <tr>
       <td>weekdoy</td>
@@ -227,11 +241,25 @@ Documentation: Calendar Table Field Information</TITLE>
       <td></td>
     </tr>
     <tr>
+      <td>weekd_remain_y</td>
+      <td>int64</td>
+      <td>weekdays remaining in year</td>
+      <td>number of weekdays until the year ends</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>tot_cald_in_y</td>
       <td>int64</td>
       <td>total calendar days in year</td>
       <td>total calendar days in the year</td>
       <td>(e.g., usually 365, except on Leap Year with certain special exceptions)</td>
+    </tr>
+    <tr>
+      <td>cald_remain_y</td>
+      <td>int64</td>
+      <td>calendar days remaining in year</td>
+      <td>calendar days remaining until year ends</td>
+      <td></td>
     </tr>
     <tr>
       <td>is_dow_mon</td>
@@ -514,6 +542,55 @@ Documentation: Calendar Table Field Information</TITLE>
       <td>(e.g., "New Year's Day", "Christmas Day")</td>
     </tr>
     <tr>
+      <td>is_workd</td>
+      <td>int32</td>
+      <td>is workday</td>
+      <td>if the date is both a weekday (is_weekd) AND is not a holiday (is_holiday), then it's a workday</td>
+      <td>(e.g., 1=Yes, 0=No)</td>
+    </tr>
+    <tr>
+      <td>workdom</td>
+      <td>int32</td>
+      <td>work day of month</td>
+      <td>workday number within the yearmonth</td>
+      <td>counts weekdays that are not holidays</td>
+    </tr>
+    <tr>
+      <td>tot_workdom</td>
+      <td>int64</td>
+      <td>total workdays in month</td>
+      <td>total number of workdays in the yearmonth</td>
+      <td>counts weekdays that are not holidays</td>
+    </tr>
+    <tr>
+      <td>workd_remain_ym</td>
+      <td>int64</td>
+      <td>workdays remaining in yearmonth</td>
+      <td>number of workdays left in the yearmonth</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>workdoy</td>
+      <td>int32</td>
+      <td>workday of year</td>
+      <td>workday number within the year</td>
+      <td>counts weekdays that are not holidays</td>
+    </tr>
+    <tr>
+      <td>tot_workdoy</td>
+      <td>int64</td>
+      <td>total workdays in year</td>
+      <td>total number of workdays in the year</td>
+      <td>counts weekdays that are not holidays</td>
+    </tr>
+    <tr>
+      <td>workd_remain_y</td>
+      <td>int64</td>
+      <td>workdays remaining in year</td>
+      <td>number of workdays left in the year</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>is_d_leapyr</td>
       <td>int32</td>
       <td>is day leap year?</td>
@@ -699,7 +776,7 @@ Documentation: Calendar Table Field Information</TITLE>
       <td>dark_duration_utc</td>
       <td>timedelta64[ns]</td>
       <td>dark duration UTC (timezone)</td>
-      <td></td>
+      <td>amount of time spent without daylight between midnight in the AM and midnight in the PM</td>
       <td></td>
     </tr>
     <tr>
@@ -727,7 +804,7 @@ Documentation: Calendar Table Field Information</TITLE>
       <td>dark_duration_local</td>
       <td>timedelta64[ns]</td>
       <td>dark duration local (coordinates)</td>
-      <td></td>
+      <td>amount of time spent without daylight between midnight in the AM and midnight in the PM</td>
       <td></td>
     </tr>
     <tr>

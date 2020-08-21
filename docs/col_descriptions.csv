@@ -1,0 +1,110 @@
+,col_name,col_dtype,col_name_full,col_description,col_example
+0,dt,datetime64[ns],date,primary key from which all metadata and dimension data is referencing,
+1,y,int64,year,year number,
+2,m,int64,month,month number,
+3,d,int64,day,calendar day number,
+4,ym,int64,yearmonth,year and month in YYYYMM format,
+5,dt_int,int64,date as integer,"year, month, and calendar day in YYYYMMDD format as integer",
+6,dow_name,object,day of week name,the name of the day of week,"(e.g., ""Monday"", ""Tuesday"", etc.)"
+7,dow,int64,day of week,day of week number,"(e.g., 0=Monday, 1=Tuesday, etc.)"
+8,doy,int64,day of year,calendar day number of the year,"(e.g., Jan31 = 31, Feb1 = 32, etc.)"
+9,m_name,object,month name,the name of the month,"(e.g., ""January"", ""February"", etc.)"
+10,iso_week,int64,iso week number,"the week number using ISO conventions, which under certain conditions will count the first partial week of a year as week number zero",
+11,norm_week,int32,normal week number,the week number using a custom convention that defines the first partial week of the year as week number 1 and increments the week number each Sunday,
+12,q,int64,quarter,"the quarter number within the year, from 1 to 4, using the standard calendar quarters",
+13,yq,int64,yearquarter,the year and quarter number in YYYYQ format,
+14,h,int64,half (of year),"the half number within the year, from 1 to 2, using standard calendar quarters","(Q1 and Q2 = half 1, Q3 and Q4 = half 2)"
+15,yh,int64,yearhalf,the year and half number in YYYYH format,
+16,ym_name,object,yearmonth name,the month name spelled out with the year,"(e.g., ""January, 2018"")"
+17,dom_suffix,object,day of month suffix,the appropriate suffix for the calendar number within the month,"(e.g., March 3 = ""rd"" for 3rd, April 1 = ""st"" for 1st, etc.)"
+18,dt_name,object,date name,"the month name spelled out with the calendar day number, the appropriate suffix, a comma, and the year","(e.g., ""June 22nd, 1999"")"
+19,is_weekd,int32,is weekday?,is this a weekend?,"(e.g., 1=Yes, 0=No)"
+20,weekdom,int32,weekday of month,weekday number within the month; weekends carry the prior weekday number forward,"(e.g. Fri Aug 14 2020 through Sun Aug 16 2020 = 10; Mon Aug 17 2020 = 11, etc.)"
+21,tot_weekd_in_mo,int64,total weekdays in month,total weekdays in the month,"(e.g., Aug 2020 = 21 weekdays long)"
+22,weekd_remain_ym,int64,weekdays remaining in yearmonth,number of weekdays until the yearmonth ends,
+23,tot_cald_in_mo,int64,total calendar days in month,total calendar day in the month,(e.g. Aug 2020 = 31 calendar days long)
+24,cald_remain_ym,int64,calendar days remaining in yearmonth,number of calendar days left in the yearmonth,
+25,weekdoy,int32,weekday of year,weekday number within the year; weekends carry the prior weekday number forward,
+26,tot_weekd_in_y,int64,total weekdays in year,total weekdays in the year,
+27,weekd_remain_y,int64,weekdays remaining in year,number of weekdays until the year ends,
+28,tot_cald_in_y,int64,total calendar days in year,total calendar days in the year,"(e.g., usually 365, except on Leap Year with certain special exceptions)"
+29,cald_remain_y,int64,calendar days remaining in year,calendar days remaining until year ends,
+30,is_dow_mon,int32,is day of week Monday?,is the date a Monday?,"(e.g., 1=Yes, 0=No)"
+31,is_dow_tue,int32,is day of week Tuesday?,is the date a Tuesday?,"(e.g., 1=Yes, 0=No)"
+32,is_dow_wed,int32,is day of week Wednesday?,is the date a Wednesday?,"(e.g., 1=Yes, 0=No)"
+33,is_dow_thu,int32,is day of week Thursday?,is the date a Thursday?,"(e.g., 1=Yes, 0=No)"
+34,is_dow_fri,int32,is day of week Friday?,is the date a Friday?,"(e.g., 1=Yes, 0=No)"
+35,is_dow_sat,int32,is day of week Saturday?,is the date a Saturday?,"(e.g., 1=Yes, 0=No)"
+36,is_dow_sun,int32,is day of week Sunday?,is the date a Sunday?,"(e.g., 1=Yes, 0=No)"
+37,tot_mon_in_ym,int64,total Mondays in yearmonth,total number of Mondays in the date's yearmonth,
+38,tot_tue_in_ym,int64,total Tuesdays in yearmonth,total number of Tuesdays in the date's yearmonth,
+39,tot_wed_in_ym,int64,total Wednesdays in yearmonth,total number of Wednesdays in the date's yearmonth,
+40,tot_thu_in_ym,int64,total Thursdays in yearmonth,total number of Thursdays in the date's yearmonth,
+41,tot_fri_in_ym,int64,total Fridays in yearmonth,total number of Fridays in the date's yearmonth,
+42,tot_sat_in_ym,int64,total Saturdays in yearmonth,total number of Saturdays in the date's yearmonth,
+43,tot_sun_in_ym,int64,total Sundays in yearmonth,total number of Sundays in the date's yearmonth,
+44,tot_mon_in_y,int64,total Mondays in year,total number of Mondays in the date's year,
+45,tot_tue_in_y,int64,total Tuesdays in year,total number of Tuesdays in the date's year,
+46,tot_wed_in_y,int64,total Wednesdays in year,total number of Wednesdays in the date's year,
+47,tot_thu_in_y,int64,total Thursdays in year,total number of Thursdays in the date's year,
+48,tot_fri_in_y,int64,total Fridays in year,total number of Fridays in the date's year,
+49,tot_sat_in_y,int64,total Saturdays in year,total number of Saturdays in the date's year,
+50,tot_sun_in_y,int64,total Sundays in year,total number of Sundays in the date's year,
+51,dow_mon_om,int32,day of week Monday of month,number of Mondays that have occurred within the yearmonth up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+52,dow_tue_om,int32,day of week Tuesday of month,number of Tuesdays that have occurred within the yearmonth up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+53,dow_wed_om,int32,day of week Wednesday of month,number of Wednesdays that have occurred within the yearmonth up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+54,dow_thu_om,int32,day of week Thursday of month,number of Thursdays that have occurred within the yearmonth up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+55,dow_fri_om,int32,day of week Friday of month,number of Fridays that have occurred within the yearmonth up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+56,dow_sat_om,int32,day of week Saturday of month,number of Saturdays that have occurred within the yearmonth up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+57,dow_sun_om,int32,day of week Sunday of month,number of Sundays that have occurred within the yearmonth up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+58,dow_mon_oy,int32,day of week Monday of year,number of Mondays that have occurred within the year up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+59,dow_tue_oy,int32,day of week Tuesday of year,number of Tuesdays that have occurred within the year up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+60,dow_wed_oy,int32,day of week Wednesday of year,number of Wednesdays that have occurred within the year up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+61,dow_thu_oy,int32,day of week Thursday of year,number of Thursdays that have occurred within the year up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+62,dow_fri_oy,int32,day of week Friday of year,number of Fridays that have occurred within the year up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+63,dow_sat_oy,int32,day of week Saturday of year,number of Saturdays that have occurred within the year up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+64,dow_sun_oy,int32,day of week Sunday of year,number of Sundays that have occurred within the year up to and including the date,"(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+65,dow_om,int32,day of week of month,"given the date's ""day of week"", this is the number of occurrences that have occurred within the yearmonth up to and including the date","(e.g., if none have occurred yet, then 0; if one has occurred then 1, etc.)"
+66,dow_om_max,int64,day of week of month max,"given the date's ""day of week"", this is the total number of occurrences that will occurr by the end of the yearmonth","(e.g., if date is Aug 16 2020, which is a Sunday, then return 5 because there are 5 by the end of the yearmonth)"
+67,dow_oy,int32,day of week of year,"given the date's ""day of week"", this is the number of occurrences that have occurred within the yearmonth up to and including the date","(e.g., if date is Feb 9 2020, which is a Sunday, then return 6 because it is the 6th Sunday of the year)"
+68,is_holiday,int64,is holiday?,is date a holiday?,"(e.g., 1=Yes, 0=No)"
+69,holiday,object,holiday,"if the date is a holiday, then show the name of the holiday","(e.g., ""New Year's Day"", ""Christmas Day"")"
+70,is_workd,int32,is workday,"if the date is both a weekday (is_weekd) AND is not a holiday (is_holiday), then it's a workday","(e.g., 1=Yes, 0=No)"
+71,workdom,int32,work day of month,workday number within the yearmonth,counts weekdays that are not holidays
+72,tot_workdom,int64,total workdays in month,total number of workdays in the yearmonth,counts weekdays that are not holidays
+73,workd_remain_ym,int64,workdays remaining in yearmonth,number of workdays left in the yearmonth,
+74,workdoy,int32,workday of year,workday number within the year,counts weekdays that are not holidays
+75,tot_workdoy,int64,total workdays in year,total number of workdays in the year,counts weekdays that are not holidays
+76,workd_remain_y,int64,workdays remaining in year,number of workdays left in the year,
+77,is_d_leapyr,int32,is day leap year?,"is the date Leap Year (the day, as in Feb 29th)?","(e.g., 1=Yes, 0=No)"
+78,is_ym_leapyr,int64,is yearmonth leap year?,is the date in a February containing a Leap Year (Feb 29th)?,"(e.g., 1=Yes, 0=No)"
+79,is_y_leapyr,int64,is year leap year?,is the date in a year containing a Leap Year (Feb 29th)?,"(e.g., 1=Yes, 0=No)"
+80,first_dom_dt,datetime64[ns],first day of month date,first day of the yearmonth as a date,
+81,first_dom_int,int64,first day of month int,first day of the yearmonth as an int (YYYYMMDD),
+82,last_dom_dt,datetime64[ns],last day of month date,last day of the yearmonth as a date,
+83,last_dom_int,int64,last day of month int,last day of the yearmonth as an int (YYYYMMDD),
+84,first_doyq_dt,datetime64[ns],first day of yearquarter date,first day of the yearquarter as a date,
+85,first_doyq_int,int64,first day of yearquarter int,first day of the yearquarter as an int (YYYYMMDD),
+86,last_doyq_dt,datetime64[ns],last day of yearquarter date,last day of the yearquarter as a date,
+87,last_doyq_int,int64,last day of yearquarter int,last day of the yearquarter as an int (YYYYMMDD),
+88,first_doyh_dt,datetime64[ns],first day of year half (of year) date,first day of the yearhalf as a date,
+89,first_doyh_int,int64,first day of year half (of year) int,first day of the yearhalf as an int (YYYYMMDD),
+90,last_doyh_dt,datetime64[ns],last day of year half (of year) date,last day of the yearhalf as a date,
+91,last_doyh_int,int64,last day of year half (of year) int,last day of the yearhalf as an int (YYYYMMDD),
+92,first_doy_dt,datetime64[ns],first day of year date,first day of the year as a date,
+93,first_doy_int,int64,first day of year int,first day of the year as an int (YYYYMMDD),
+94,last_doy_dt,datetime64[ns],last day of year date,last day of the year as a date,
+95,last_doy_int,int64,last day of year int,last day of the year as an int (YYYYMMDD),
+96,moon_phase_name,object,moon phase name,moon phase name,"(e.g., ""Full Moon"", ""New Moon"", etc.)"
+97,moon_phase_index_int,int64,moon phase index integer,"moon phase represented as an integer index value (1-8, discrete)","(e.g., Full Moon = 1, etc.)"
+98,moon_phase_index_full,float64,moon phase index full,"moon phase represented as a float index value (1-8, continuous) where decimals reflect relative distance between moon phases",
+99,moon_illum_pct,float64,moon illumination percent,percentage of moon illuminated,"(e.g., 0% = new moon; 100% = full moon, etc.)"
+100,sunrise_utc,"datetime64[ns, tzutc()]",sunrise UTC (timezone),time of sunrise on date at origin of UTC timezone,
+101,sunset_utc,"datetime64[ns, tzutc()]",sunset UTC (timezone),time of sunset on date at origin of UTC timezone,
+102,sun_duration_utc,timedelta64[ns],sun duration UTC (timezone),length of daylight on date (time between sunrise and sunset) at origin of UTC timezone,
+103,dark_duration_utc,timedelta64[ns],dark duration UTC (timezone),amount of time spent without daylight between midnight in the AM and midnight in the PM,
+104,sunrise_local,"datetime64[ns, tzlocal()]",sunrise local (coordinates),time of sunrise on date at lat/lon coords provided,
+105,sunset_local,"datetime64[ns, tzlocal()]",sunset local (coordinates),time of sunset on date at lat/lon coords provided,
+106,sun_duration_local,timedelta64[ns],sun duration local (coordinates),length of daylight on date (time between sunrise and sunset) at lat/lon coords provided,
+107,dark_duration_local,timedelta64[ns],dark duration local (coordinates),amount of time spent without daylight between midnight in the AM and midnight in the PM,
+108,created_on,object,created on,date and time stamp when this calendar table was created by the scripts,
