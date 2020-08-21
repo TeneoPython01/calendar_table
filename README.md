@@ -77,9 +77,9 @@ NOTES:
 <li> Example CSV output is provided in git repo
 <li> When this code is run for a span of 5 years:
 <ul>
-<li> ~2,200 rows of data are created with ~100 columns (~220k cells)
-<li> the resulting CSV's filesize is about 1.4 MiB
-<li> the script takes 25 seconds on my raspberry pi 4B (very low specs)
+<li> ~2,200 rows of data are created with ~110 columns (~240k cells)
+<li> the resulting CSV's filesize is ~1.5 MiB
+<li> the script takes ~28 seconds on my raspberry pi 4B (very low specs)
 <li> code will run much faster on a modern laptop or desktop
 </ul>
 <li> No special import statements needed besides standard Python
