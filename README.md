@@ -1,5 +1,7 @@
 <b>This is the best calendar_table with the most columns of interesting date dimensions you'll ever find!</b><br>
 
+<h4> <i>Most recent successful run was on June 7, 2023 using Python 3.7.3, pandas 0.25.1 ; numpy 1.16.2 </i> </h4>
+
 <h3>
 PURPOSE:
 </h3>
