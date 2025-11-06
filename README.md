@@ -23,9 +23,7 @@ Additionally, some interesting and unique data elements include:
 - sunrise/sunset for UTC as well as user-provided lat/lon coordinates
 - length of daylight / darkness each day/evening
 
-For more information about the date dimensions and fields available, see these supporting documents:
-- Documentation: [Full column list with datatypes and descriptions](./docs/col_descriptions.csv)
-- Documentation: [Sample output](./calendar_table_output.csv) (download and view in a CSV viewer like Excel)
+Documentation: [Full column list with datatypes and descriptions](./docs/col_descriptions.csv)
 
 
 ## Setup
