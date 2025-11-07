@@ -7,6 +7,7 @@ https://github.com/TeneoPython01
 '''
 
 import math
+import os
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
@@ -26,9 +27,12 @@ pd.set_option('display.width', 1000) #don't wrap lots of columns
 misc_udfs.printHeader()
 
 #set important user-defined variables
-#TODO: set these via a config.ini file
-start_dt='01-01-2020'
-end_dt='12-31-2025'
+start_dt = os.environ.get('START_DATE')
+end_dt = os.environ.get('END_DATE')
+
+if not start_dt or not end_dt:
+    raise ValueError("START_DATE and END_DATE environment variables must be set")
+
 cal_lat = 32.7  #set locale latitude;  dallas, tx is lat 32.7, lon -96.8
 cal_lon = -96.8 #set locale longitude; dallas, tx is lat 32.7, lon -96.8
 
