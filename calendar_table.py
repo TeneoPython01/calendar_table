@@ -16,19 +16,6 @@ from udfs import moon, sun, holiday, date_udfs, df_udfs, html_udfs, misc_udfs
 from docs import create_docs
 
 
-def get_time_delta(time_start, time_end):
-    """
-    Calculate the difference between two times in hours, rounded to the nearest integer.
-    Works with pandas Series or individual datetime objects.
-    
-    :param time_start: Start time (datetime, timedelta, or pandas Series)
-    :param time_end: End time (datetime, timedelta, or pandas Series)
-    :return: Integer hours difference (or pandas Series of integers)
-    """
-    delta = time_end - time_start
-    return (delta.dt.total_seconds() / 3600).round().astype(int)
-
-
 OUTPUT_DIR = './output'
 DOCS_DIR = OUTPUT_DIR + '/docs'
 
@@ -407,7 +394,7 @@ df['sunrise_utc'] = df['dt'].apply(lambda x: sun.get_sunrise_time(date = x))
 df['sunset_utc'] = df['dt'].apply(lambda x: sun.get_sunset_time(date = x))
 
 #sunlight duration utc
-df['sun_duration_utc'] = get_time_delta(df['sunrise_utc'], df['sunset_utc'])
+df['sun_duration_utc'] = get_delta(df['sunrise_utc'], df['sunset_utc'])
 
 #darkness duration utc (midnight to sunrise plus sunset to following midnight)
 df['dark_duration_utc'] = timedelta(hours=24) - df['sun_duration_utc']
@@ -433,5 +420,11 @@ create_docs.writeHTMLToFile(
     html_udfs.df_to_html('Documentation: Calendar Table Field Information',
         create_docs.createColumnDescriptions(df, './docs/input/desc.csv')
     ), DOCS_DIR + '/col_descriptions.html')
+
+# Convert timedelta columns to rounded hours (integer)
+df['sun_duration_utc'] = (df['sun_duration_utc'].dt.total_seconds() / 3600).round().astype(int)
+df['dark_duration_utc'] = (df['dark_duration_utc'].dt.total_seconds() / 3600).round().astype(int)
+df['sun_duration_local'] = (df['sun_duration_local'].dt.total_seconds() / 3600).round().astype(int)
+df['dark_duration_local'] = (df['dark_duration_local'].dt.total_seconds() / 3600).round().astype(int)
 
 misc_udfs.tprint('Documentation about column descriptions and datatypes loaded to ' + DOCS_DIR + '/col_descriptions.html')
