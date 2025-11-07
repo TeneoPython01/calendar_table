@@ -19,7 +19,11 @@ def getUser():
     :returns: the current user
     """
 
-    return os.getlogin()
+    try:
+        return os.getlogin()
+    except (OSError, AttributeError):
+        # Fallback for Docker/environments without controlling terminal
+        return os.environ.get('USER', os.environ.get('USERNAME', 'docker-user'))
     
 
 def buildMultilineHeader():
