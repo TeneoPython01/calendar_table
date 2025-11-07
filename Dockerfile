@@ -13,7 +13,7 @@ COPY . .
 # Don't buffer output (so logs appear immediately)
 ENV PYTHONUNBUFFERED=1
 
-VOLUME ["/app"]
+VOLUME ["/app/output"]
 
 CMD ["python", "calendar_table.py"]
 
