@@ -394,7 +394,7 @@ df['sunrise_utc'] = df['dt'].apply(lambda x: sun.get_sunrise_time(date = x))
 df['sunset_utc'] = df['dt'].apply(lambda x: sun.get_sunset_time(date = x))
 
 #sunlight duration utc
-df['sun_duration_utc'] = get_delta(df['sunrise_utc'], df['sunset_utc'])
+df['sun_duration_utc'] = df['sunset_utc'] - df['sunrise_utc']
 
 #darkness duration utc (midnight to sunrise plus sunset to following midnight)
 df['dark_duration_utc'] = timedelta(hours=24) - df['sun_duration_utc']
