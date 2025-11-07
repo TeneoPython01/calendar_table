@@ -15,8 +15,23 @@ from dateutil import tz
 from udfs import moon, sun, holiday, date_udfs, df_udfs, html_udfs, misc_udfs
 from docs import create_docs
 
+
+def get_time_delta(time_start, time_end):
+    """
+    Calculate the difference between two times in hours, rounded to the nearest integer.
+    Works with pandas Series or individual datetime objects.
+    
+    :param time_start: Start time (datetime, timedelta, or pandas Series)
+    :param time_end: End time (datetime, timedelta, or pandas Series)
+    :return: Integer hours difference (or pandas Series of integers)
+    """
+    delta = time_end - time_start
+    return (delta.dt.total_seconds() / 3600).round().astype(int)
+
+
 OUTPUT_DIR = './output'
 DOCS_DIR = OUTPUT_DIR + '/docs'
+
 
 #set pandas display options for printing to screen
 pd.set_option('display.max_rows', 1000) #allow printing lots of rows to screen
@@ -392,7 +407,7 @@ df['sunrise_utc'] = df['dt'].apply(lambda x: sun.get_sunrise_time(date = x))
 df['sunset_utc'] = df['dt'].apply(lambda x: sun.get_sunset_time(date = x))
 
 #sunlight duration utc
-df['sun_duration_utc'] = df['sunset_utc'] - df['sunrise_utc']
+df['sun_duration_utc'] = get_time_delta(df['sunrise_utc'], df['sunset_utc'])
 
 #darkness duration utc (midnight to sunrise plus sunset to following midnight)
 df['dark_duration_utc'] = timedelta(hours=24) - df['sun_duration_utc']
