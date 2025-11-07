@@ -34,7 +34,9 @@ if not start_dt or not end_dt:
     raise ValueError("START_DATE and END_DATE environment variables must be set")
 
 start_dt = start_dt.replace('-', '')
+start_dt = start_dt.replace('/', '')
 end_dt = end_dt.replace('-', '')
+end_dt = end_dt.replace('/', '')
 
 cal_lat = 32.7  #set locale latitude;  dallas, tx is lat 32.7, lon -96.8
 cal_lon = -96.8 #set locale longitude; dallas, tx is lat 32.7, lon -96.8

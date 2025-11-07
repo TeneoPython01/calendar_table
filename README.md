@@ -34,7 +34,9 @@ docker run -e START_DATE='2020-01-01' -e END_DATE='2028-12-31' \
 
 Argumdnts:
 
-- `START_DATE` and `END_DATE` are in the 'YYYY-MM-DD' format. Dashes are optional.
+- `START_DATE` and `END_DATE` are in the 'YYYY-MM-DD' format. Separators can be
+  added for better readibility. Dashes (`-`) and slashes (`/`) are accepted,
+  but optional.
 - The path (`./output`) will be created on the host system if it doesn't exist.
   It will be a directory containing the generated file.
 
