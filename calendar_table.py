@@ -38,8 +38,9 @@ start_dt = start_dt.replace('/', '')
 end_dt = end_dt.replace('-', '')
 end_dt = end_dt.replace('/', '')
 
-cal_lat = 32.7  #set locale latitude;  dallas, tx is lat 32.7, lon -96.8
-cal_lon = -96.8 #set locale longitude; dallas, tx is lat 32.7, lon -96.8
+# Geographical coordinates of Edinburgh, Scotland
+cal_lat = 55.95
+cal_lon = -3.19
 
 #start the process
 misc_udfs.tprint('calendar table process started for ' + start_dt + ' through ' + end_dt + ' inclusive')
