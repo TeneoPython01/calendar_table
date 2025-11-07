@@ -412,4 +412,4 @@ create_docs.writeHTMLToFile(
         create_docs.createColumnDescriptions(df, './docs/input/desc.csv')
     ), DOCS_DIR + '/col_descriptions.html')
 
-misc_udfs.tprint('Documention about column descriptions and datatypes loaded to ' + DOCS_DIR + '/col_descriptions.html')
+misc_udfs.tprint('Documentation about column descriptions and datatypes loaded to ' + DOCS_DIR + '/col_descriptions.html')
