@@ -408,6 +408,12 @@ df['sun_duration_local'] = df['sunset_local'] - df['sunrise_local']
 #darkness duration local (midnight to sunrise plus sunset to following midnight)
 df['dark_duration_local'] = timedelta(hours=24) - df['sun_duration_local']
 
+# Convert timedelta columns to rounded hours (integer)
+df['sun_duration_utc'] = (df['sun_duration_utc'].dt.total_seconds() / 3600).round().astype(int)
+df['dark_duration_utc'] = (df['dark_duration_utc'].dt.total_seconds() / 3600).round().astype(int)
+df['sun_duration_local'] = (df['sun_duration_local'].dt.total_seconds() / 3600).round().astype(int)
+df['dark_duration_local'] = (df['dark_duration_local'].dt.total_seconds() / 3600).round().astype(int)
+
 #save the calendar table to a CSV file
 df.to_csv(OUTPUT_DIR + '/calendar_table_output.csv')
 misc_udfs.tprint('Calendar table process completed for ' + start_dt + ' through ' + end_dt + ' inclusive')
@@ -420,11 +426,5 @@ create_docs.writeHTMLToFile(
     html_udfs.df_to_html('Documentation: Calendar Table Field Information',
         create_docs.createColumnDescriptions(df, './docs/input/desc.csv')
     ), DOCS_DIR + '/col_descriptions.html')
-
-# Convert timedelta columns to rounded hours (integer)
-df['sun_duration_utc'] = (df['sun_duration_utc'].dt.total_seconds() / 3600).round().astype(int)
-df['dark_duration_utc'] = (df['dark_duration_utc'].dt.total_seconds() / 3600).round().astype(int)
-df['sun_duration_local'] = (df['sun_duration_local'].dt.total_seconds() / 3600).round().astype(int)
-df['dark_duration_local'] = (df['dark_duration_local'].dt.total_seconds() / 3600).round().astype(int)
 
 misc_udfs.tprint('Documentation about column descriptions and datatypes loaded to ' + DOCS_DIR + '/col_descriptions.html')
