@@ -99,7 +99,7 @@ df['norm_week_adj'] = np.where(
         )
     )
 
-df['norm_week_adj'] = df[['y','norm_week_adj']].groupby('y')['norm_week_adj'].ffill()
+df['norm_week_adj'] = df[['year','norm_week_adj']].groupby('year')['norm_week_adj'].ffill()
 df['norm_week_adj'] = df['norm_week_adj'].fillna(0)
 df['norm_week'] = df['norm_week'] + df['norm_week_adj']
 df['norm_week'] = df['norm_week'].astype(int)
@@ -145,16 +145,16 @@ df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_cald_in_mo', 'ym', 'dt_int',
 df['cald_remain_ym'] = df['tot_cald_in_mo'] - df['day']
 
 #weekdays in year through date
-df['weekdoy'] = df[['y','is_weekd']].groupby('y')['is_weekd'].cumsum()
+df['weekdoy'] = df[['year','is_weekd']].groupby('year')['is_weekd'].cumsum()
 
 #total weekdays in year
-df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_weekd_in_y', 'y', 'is_weekd', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_weekd_in_y', 'year', 'is_weekd', 'sum')
 
 #weekdays remaining in year
 df['weekd_remain_y'] = df['tot_weekd_in_y'] - df['weekdoy']
 
 #total caldays in year
-df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_cald_in_y', 'y', 'dt_int', 'count')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_cald_in_y', 'year', 'dt_int', 'count')
 
 #calendar days remaining in year
 df['cald_remain_y'] = df['tot_cald_in_y'] - df['doy']
@@ -202,25 +202,25 @@ df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_sat_in_ym', 'ym', 'is_dow_sa
 df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_sun_in_ym', 'ym', 'is_dow_sun', 'sum')
 
 #total mondays in yearmonth
-df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_mon_in_y', 'y', 'is_dow_mon', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_mon_in_y', 'year', 'is_dow_mon', 'sum')
 
 #total mondays in yearmonth
-df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_tue_in_y', 'y', 'is_dow_tue', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_tue_in_y', 'year', 'is_dow_tue', 'sum')
 
 #total mondays in yearmonth
-df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_wed_in_y', 'y', 'is_dow_wed', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_wed_in_y', 'year', 'is_dow_wed', 'sum')
 
 #total mondays in yearmonth
-df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_thu_in_y', 'y', 'is_dow_thu', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_thu_in_y', 'year', 'is_dow_thu', 'sum')
 
 #total mondays in yearmonth
-df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_fri_in_y', 'y', 'is_dow_fri', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_fri_in_y', 'year', 'is_dow_fri', 'sum')
 
 #total mondays in yearmonth
-df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_sat_in_y', 'y', 'is_dow_sat', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_sat_in_y', 'year', 'is_dow_sat', 'sum')
 
 #total mondays in yearmonth
-df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_sun_in_y', 'y', 'is_dow_sun', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_sun_in_y', 'year', 'is_dow_sun', 'sum')
 
 #mondays of yearmonth through date
 df['dow_mon_om'] = df[['ym','is_dow_mon']].groupby('ym')['is_dow_mon'].cumsum()
@@ -244,25 +244,25 @@ df['dow_sat_om'] = df[['ym','is_dow_sat']].groupby('ym')['is_dow_sat'].cumsum()
 df['dow_sun_om'] = df[['ym','is_dow_sun']].groupby('ym')['is_dow_sun'].cumsum()
 
 #mondays of year through date
-df['dow_mon_oy'] = df[['y','is_dow_mon']].groupby('y')['is_dow_mon'].cumsum()
+df['dow_mon_oy'] = df[['year','is_dow_mon']].groupby('year')['is_dow_mon'].cumsum()
 
 #tuesdays of year through date
-df['dow_tue_oy'] = df[['y','is_dow_tue']].groupby('y')['is_dow_tue'].cumsum()
+df['dow_tue_oy'] = df[['year','is_dow_tue']].groupby('year')['is_dow_tue'].cumsum()
 
 #wednesdays of year through date
-df['dow_wed_oy'] = df[['y','is_dow_wed']].groupby('y')['is_dow_wed'].cumsum()
+df['dow_wed_oy'] = df[['year','is_dow_wed']].groupby('year')['is_dow_wed'].cumsum()
 
 #thursdays of year through date
-df['dow_thu_oy'] = df[['y','is_dow_thu']].groupby('y')['is_dow_thu'].cumsum()
+df['dow_thu_oy'] = df[['year','is_dow_thu']].groupby('year')['is_dow_thu'].cumsum()
 
 #fridays of year through date
-df['dow_fri_oy'] = df[['y','is_dow_fri']].groupby('y')['is_dow_fri'].cumsum()
+df['dow_fri_oy'] = df[['year','is_dow_fri']].groupby('year')['is_dow_fri'].cumsum()
 
 #saturdays of year through date
-df['dow_sat_oy'] = df[['y','is_dow_sat']].groupby('y')['is_dow_sat'].cumsum()
+df['dow_sat_oy'] = df[['year','is_dow_sat']].groupby('year')['is_dow_sat'].cumsum()
 
 #sundays of year through date
-df['dow_sun_oy'] = df[['y','is_dow_sun']].groupby('y')['is_dow_sun'].cumsum()
+df['dow_sun_oy'] = df[['year','is_dow_sun']].groupby('year')['is_dow_sun'].cumsum()
 
 #dow of month based on dow: first find the appropriate col to ref, then grab its value
 df['dow_om'] = 'dow_' + df['dow'].apply(lambda x: date_udfs.mapDayOfWeekToOrdinalFieldName(x)) + '_om'
@@ -302,10 +302,10 @@ df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_workdom', 'ym', 'is_workd', 
 df['workd_remain_ym'] = df['tot_workdom'] - df['workdom']
 
 #workday of year
-df['workdoy'] = df[['y','is_workd']].groupby('y')['is_workd'].cumsum()
+df['workdoy'] = df[['year','is_workd']].groupby('year')['is_workd'].cumsum()
 
 #total workdays in year
-df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_workdoy', 'y', 'is_workd', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_workdoy', 'year', 'is_workd', 'sum')
 
 #workdays remaining in yearmonth
 df['workd_remain_y'] = df['tot_workdoy'] - df['workdoy']
@@ -321,7 +321,7 @@ df['is_d_leapyr'] = np.where(
 df = df_udfs.addColumnFromGroupbyOperation(df, 'is_ym_leapyr', 'ym', 'is_d_leapyr', 'sum')
 
 #is year a leap year
-df = df_udfs.addColumnFromGroupbyOperation(df, 'is_y_leapyr', 'y', 'is_d_leapyr', 'sum')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'is_y_leapyr', 'year', 'is_d_leapyr', 'sum')
 
 #first day of month datetime
 df = df_udfs.addColumnFromGroupbyOperation(df, 'first_dom_dt', 'ym', 'dt', 'min')
@@ -360,16 +360,16 @@ df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doyh_dt', 'yh', 'dt', 'max'
 df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doyh_int', 'yh', 'dt_int', 'max')
 
 #first day of year datetime
-df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doy_dt', 'y', 'dt', 'min')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doy_dt', 'year', 'dt', 'min')
 
 #first day of year int
-df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doy_int', 'y', 'dt_int', 'min')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'first_doy_int', 'year', 'dt_int', 'min')
 
 #last day of year datetime
-df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doy_dt', 'y', 'dt', 'max')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doy_dt', 'year', 'dt', 'max')
 
 #last day of year datetime
-df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doy_int', 'y', 'dt_int', 'max')
+df = df_udfs.addColumnFromGroupbyOperation(df, 'last_doy_int', 'year', 'dt_int', 'max')
 
 #moon phase name (approximate)
 moon = moon.Moon()
