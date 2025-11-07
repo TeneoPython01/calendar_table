@@ -1,8 +1,8 @@
 col_name,col_name_full,col_description,col_example
 dt,date,primary key from which all metadata and dimension data is referencing,
-y,year,year number,
-m,month,month number,
-d,day,calendar day number,
+year,year,year number,
+month,month,month number,
+day,day,calendar day number,
 ym,yearmonth,year and month in YYYYMM format,
 dt_int,date as integer,"year, month, and calendar day in YYYYMMDD format as integer",
 dow_name,day of week name,the name of the day of week,"(e.g., ""Monday"", ""Tuesday"", etc.)"

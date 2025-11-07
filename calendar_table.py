@@ -51,19 +51,19 @@ df = pd.DataFrame()
 df['dt'] = pd.date_range(start=start_dt, end=end_dt, freq='D')
 
 #year as int
-df['y'] = pd.DatetimeIndex(df['dt']).year
+df['year'] = pd.DatetimeIndex(df['dt']).year
 
 #month as int
-df['m'] = pd.DatetimeIndex(df['dt']).month
+df['month'] = pd.DatetimeIndex(df['dt']).month
 
 #calendar day as int
-df['d'] = pd.DatetimeIndex(df['dt']).day
+df['day'] = pd.DatetimeIndex(df['dt']).day
 
 #yearmonth as int
-df['ym'] = df['y']*100 + df['m']
+df['ym'] = df['year']*100 + df['month']
 
 #date in yyyymmdd as int
-df['dt_int'] = df['y']*10000 + df['m']*100 + df['d']
+df['dt_int'] = df['year']*10000 + df['month']*100 + df['day']
 
 #day of week name (Monday, Tuesday, ...)
 df['dow_name'] = df['dt'].dt.day_name()
@@ -106,25 +106,25 @@ df['norm_week'] = df['norm_week'].astype(int)
 df.drop('norm_week_adj', axis=1, inplace=True)
 
 #quarter number of year
-df['q'] = ((df['m']-1) // 3) + 1
+df['q'] = ((df['month']-1) // 3) + 1
 
 #yearquarter as int
-df['yq'] = df['y']*10+df['q']
+df['yq'] = df['year']*10+df['q']
 
 #half number of year
 df['h'] = ((df['q']-1) // 2) + 1
 
 #yearhalf as int
-df['yh'] = df['y']*10+df['h']
+df['yh'] = df['year']*10+df['h']
 
 #yearmonth name
-df['ym_name'] = df['m_name'] + ', ' + df['y'].apply(lambda x: str(x))
+df['ym_name'] = df['m_name'] + ', ' + df['year'].apply(lambda x: str(x))
 
 #ordinal dom suffix
-df['dom_suffix'] = df['d'].apply(lambda x: date_udfs.ordinalSuffix(x))
+df['dom_suffix'] = df['day'].apply(lambda x: date_udfs.ordinalSuffix(x))
 
 #date name
-df['dt_name'] = df['m_name'] + ' ' + df['d'].apply(lambda x: str(x)) + df['dom_suffix'] + ', ' + df['y'].apply(lambda x: str(x))
+df['dt_name'] = df['m_name'] + ' ' + df['day'].apply(lambda x: str(x)) + df['dom_suffix'] + ', ' + df['year'].apply(lambda x: str(x))
 
 #is weekday (1=True, 0=False)
 df['is_weekd'] = np.where(df['dow'].isin([0,1,2,3,4,]), 1, 0)
@@ -142,7 +142,7 @@ df['weekd_remain_ym'] = df['tot_weekd_in_mo'] - df['weekdom']
 df = df_udfs.addColumnFromGroupbyOperation(df, 'tot_cald_in_mo', 'ym', 'dt_int', 'count')
 
 #calendar days remaining in yearmonth
-df['cald_remain_ym'] = df['tot_cald_in_mo'] - df['d']
+df['cald_remain_ym'] = df['tot_cald_in_mo'] - df['day']
 
 #weekdays in year through date
 df['weekdoy'] = df[['y','is_weekd']].groupby('y')['is_weekd'].cumsum()
@@ -312,7 +312,7 @@ df['workd_remain_y'] = df['tot_workdoy'] - df['workdoy']
 
 #is day Leap Year day
 df['is_d_leapyr'] = np.where(
-    (df['m']==2) & (df['d']==29),
+    (df['month']==2) & (df['day']==29),
     1,
     0
     )
