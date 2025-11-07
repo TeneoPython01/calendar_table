@@ -10,6 +10,35 @@ table with many columns of date dimensions
 and metadata. Output to CSV.
 
 
+## Usage with Docker
+
+The first time you run this Generator, you'll need to build a Docker image
+from the Dockerfile. You'll need to do it again every time you update
+the code.
+
+To build a Docker image:
+
+```
+docker build -t calendar-table .
+```
+
+Then, you can use the Generator by creating an ephemeral container. This container
+will be destroyed when the Generator ends its execution.
+
+To run the Generator:
+
+```
+docker run -e START_DATE='2020-01-01' -e END_DATE='2028-12-31' \
+  -v ./output:/app/output calendar-table
+```
+
+Argumdnts:
+
+- `START_DATE` and `END_DATE` are in the 'YYYY-MM-DD' format. Dashes are optional.
+- The path (`./output`) will be created on the host system if it doesn't exist.
+  It will be a directory containing the generated file.
+
+
 ## Which Columns are Created
 
 First of all, you'll find the usual dimensions:
@@ -24,12 +53,6 @@ Additionally, some interesting and unique data elements include:
 - length of daylight / darkness each day/evening
 
 Documentation: [Full column list with datatypes and descriptions](./docs/col_descriptions.csv)
-
-
-## Setup
-
-Clone, checkout, or download the .py and run it in Python 3.7+.
-No imports will be needed outside of standard libraries.
 
 
 ## Notes
