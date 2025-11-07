@@ -14,6 +14,9 @@ from dateutil import tz
 from udfs import moon, sun, holiday, date_udfs, df_udfs, html_udfs, misc_udfs
 from docs import create_docs
 
+OUTPUT_DIR = './output'
+DOCS_DIR = OUTPUT_DIR + '/docs'
+
 #set pandas display options for printing to screen
 pd.set_option('display.max_rows', 1000) #allow printing lots of rows to screen
 pd.set_option('display.max_columns', 1000) #allow printsin lots of cols to screen
@@ -397,16 +400,16 @@ df['dark_duration_local'] = timedelta(hours=24) - df['sun_duration_local']
 df['created_on'] = datetime.now()
 
 #save the calendar table to a CSV file
-df.to_csv('./calendar_table_output.csv')
+df.to_csv(OUTPUT_DIR + '/calendar_table_output.csv')
 misc_udfs.tprint('Calendar table process completed for ' + start_dt + ' through ' + end_dt + ' inclusive')
 
 #generate the CSV support document that
-create_docs.createColumnDescriptions(df, './docs/input/desc.csv').to_csv('./docs/col_descriptions.csv')
+create_docs.createColumnDescriptions(df, './docs/input/desc.csv').to_csv(DOCS_DIR + '/col_descriptions.csv')
 
 #generate the HTML support document that explains each column in tha calendar_table
 create_docs.writeHTMLToFile(
     html_udfs.df_to_html('Documentation: Calendar Table Field Information',
         create_docs.createColumnDescriptions(df, './docs/input/desc.csv')
-    ),'./docs/col_descriptions.html')
+    ), DOCS_DIR + '/col_descriptions.html')
 
-misc_udfs.tprint('Documention about column descriptions and datatypes loaded to ./docs/col_descriptions.html')
+misc_udfs.tprint('Documention about column descriptions and datatypes loaded to ' + DOCS_DIR + '/col_descriptions.html')
