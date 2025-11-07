@@ -190,13 +190,13 @@ class Holiday():
 
                 #find holidays based on a set literal month and day (e.g., "Christmas Day is always on December 25th"
                 if (hf_row['is_lit_rule'] == 1) & \
-                (df_row['m'] == hf_row['lit_m']) & \
-                (df_row['d'] == hf_row['lit_d']):
+                (df_row['month'] == hf_row['lit_m']) & \
+                (df_row['day'] == hf_row['lit_d']):
                     index_list.append((i, hf_row['holiday_name']))
 
                 #find holidays based on a relative month and day (e.g., "Thanksgiving is the 4th Thursday in November")
                 if (hf_row['is_lit_rule'] == 0) & \
-                (df_row['m'] == hf_row['rel_m']) & \
+                (df_row['month'] == hf_row['rel_m']) & \
                 (df_row['dow'] == hf_row['rel_dow']) & \
                 (df_row['dow_om'] == hf_row['rel_occur']):
                     index_list.append((i, hf_row['holiday_name']))
@@ -204,14 +204,14 @@ class Holiday():
                 #find holidays based on being the last dow in a month (e.g., "Memorial Day is the last Monday in May")
                 if (hf_row['is_lit_rule'] == 0) & \
                 (hf_row['rel_last'] == 1) & \
-                (df_row['m'] == hf_row['rel_m']) & \
+                (df_row['month'] == hf_row['rel_m']) & \
                 (df_row['dow'] == hf_row['rel_dow']) & \
                 (df_row['dow_om'] == df_row['dow_om_max']):
                     index_list.append((i, hf_row['holiday_name']))
 
                 #find Easter Sunday
                 if (hf_row['is_easter'] == 1) & \
-                (findEaster(df_row['y'])[0:3] == (df_row['y'], df_row['m'], df_row['d'])):
+                (findEaster(df_row['year'])[0:3] == (df_row['year'], df_row['month'], df_row['day'])):
                     index_list.append((i, 'Easter Sunday'))
 
         cal_df['is_holiday']=0
