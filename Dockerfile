@@ -15,5 +15,5 @@ ENV PYTHONUNBUFFERED=1
 
 VOLUME ["/app/output"]
 
-CMD ["python", "calendar_table.py"]
+CMD ["python", "calendar.py"]
 
