@@ -15,5 +15,5 @@ ENV PYTHONUNBUFFERED=1
 
 VOLUME ["/app/output"]
 
-CMD ["python", "calendar.py"]
+CMD ["python", "entrypoint.py"]
 
