@@ -16,6 +16,7 @@ from udfs import moon, sun, holiday, date_udfs, df_udfs, html_udfs, misc_udfs
 from docs import create_docs
 
 
+# Constants
 OUTPUT_DIR = './output'
 DOCS_DIR = OUTPUT_DIR + '/docs'
 
@@ -28,10 +29,25 @@ pd.set_option('display.width', 1000) #don't wrap lots of columns
 #print metadata about the script and the user to start the script
 misc_udfs.printHeader()
 
-#set important user-defined variables
+# user-defined variables
+skip_columns = os.environ.get('SKIP_COLUMNS', None)
+include_columns = os.environ.get('INCLUDE_COLUMNS', None)
 start_dt = os.environ.get('START_DATE')
 end_dt = os.environ.get('END_DATE')
 
+# validate columns
+if skip_columns is not None and include_columns is not None:
+    raise ValueError("SKIP_COLUMNS and INCLUDE_COLUMNS environment variables are mutually exclusive")
+if skip_columns:
+    skip_columns = skip_columns.split(',')
+    if 'dt' in skip_columns:
+        raise ValueError('dt column cannot be excluded')
+if include_columns:
+    include_columns = include_columns.split(',')
+    if 'dt' not in include_columns:
+        raise ValueError('dt column must be included')
+
+# validate time range
 if not start_dt or not end_dt:
     raise ValueError("START_DATE and END_DATE environment variables must be set")
 
@@ -413,6 +429,18 @@ df['sun_duration_utc'] = (df['sun_duration_utc'].dt.total_seconds() / 3600).roun
 df['dark_duration_utc'] = (df['dark_duration_utc'].dt.total_seconds() / 3600).round().astype(int)
 df['sun_duration_local'] = (df['sun_duration_local'].dt.total_seconds() / 3600).round().astype(int)
 df['dark_duration_local'] = (df['dark_duration_local'].dt.total_seconds() / 3600).round().astype(int)
+
+# Now we exclude variables listed in SKIP_COLUMNS xor columns not mentioned in INCLUDE_COLUMNS.
+# Doing this now means that all columns are generated, whether they are needed or not.
+# But there are benefits:
+#   - We keep the code less verbose
+#   - We don't need to implement dependencies between columns
+if skip_columns:
+    df = df.drop(columns=[col for col in skip_columns if col in df.columns])
+elif include_columns:
+    # Always keep 'dt' as the primary key
+    cols_to_keep = [col for col in include_columns if col in df.columns]
+    df = df[cols_to_keep]
 
 #save the calendar table to a CSV file
 df.to_csv(OUTPUT_DIR + '/calendar_table_output.csv')
