@@ -1,14 +1,19 @@
 # Calendar Table Generator
 
+The purpose of this project is to generate rich date/time data that can easily be imported
+into a database, for analytics goals.
 
-## Purpose
+The project contains tools to generate a calendar table and a daytime table, with various
+attributes and metadata.
 
-Quickly and easily generate a calendar
-table with many columns of date dimensions
-and metadata. Output to CSV.
+The output is currently written to CSV files.
 
 
-## Usage with Docker
+## Usage with Docker or Podman
+
+The best way to use these tools is via Docker or Podman.
+While containerisation is not strictly necessary, it is how we normally test
+and use this project.
 
 The first time you run this Generator, you'll need to build a Docker image
 from the Dockerfile. You'll need to do it again every time you update
@@ -60,6 +65,8 @@ Options:
 
 ## Which Columns are Created
 
+TO-DO: Update this section.
+
 First of all, you'll find the usual dimensions:
 - year number, month number, day number, yearmonth, yearquarter
 - month name, day name, full date w ordinal suffix (e.g., "January 3rd, 2012")
@@ -74,21 +81,20 @@ Additionally, some interesting and unique data elements include:
 Documentation: [Full column list with datatypes and descriptions](./docs/col_descriptions.csv)
 
 
-## Notes
+## Limitations
 
-- Example CSV output is provided in git repo
-- When this code is run for a span of 5 years:
-  - ~2,200 rows of data are created with ~110 columns (~240k cells)
-  - the resulting CSV's filesize is ~1.5 MiB
-  - the script takes ~28 seconds on my raspberry pi 4B (very low specs)
-  - code will run much faster on a modern laptop or desktop
-- No special import statements needed besides standard Python
-  3.7+ packages
-- 32-bit OS and hardware may cause limitations in the ability
-  to generate table data for years far in the future (2040)
-  and throw "OverflowError: timestamp out of range for
-  platform time_t"; no limitation has been observed on
-  64-bit systems.  
+32-bit OS and hardware may cause limitations in the ability
+to generate table data for years far in the future (2040) and raise
+an OverflowError exception.
+No limitation was observed on 64-bit systems.  
+
+Holidays data uses a home-made implementation from the original project.
+We will replace it with a reliable Python module.
+
+CSV files are generated and they can be imported into databases.
+But we don't provide (yet) a simple way to generate optimal tables
+with the correct types.
+We will do this at least for PostgreSQL and MariaDB.
 
 
 ## Maintainers and Credits
@@ -100,10 +106,8 @@ The original project's author is [TeneoPython01](https://github.com/TeneoPython0
 External contributions, if still present, are noted in the code.
 
 
-### License
+## License
 
-See license information in git repo.  The software
-is released in the public domain as-is without any
-warranty.  More details can be found in the
-license file.
+This software is released in the public domain as-is without any warranty.
+See the license file.
 
