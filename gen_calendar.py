@@ -26,9 +26,6 @@ pd.set_option('display.max_rows', 1000) #allow printing lots of rows to screen
 pd.set_option('display.max_columns', 1000) #allow printsin lots of cols to screen
 pd.set_option('display.width', 1000) #don't wrap lots of columns
 
-#print metadata about the script and the user to start the script
-misc_udfs.printHeader()
-
 # user-defined variables
 skip_columns = os.environ.get('SKIP_COLUMNS', None)
 include_columns = os.environ.get('INCLUDE_COLUMNS', None)
