@@ -17,9 +17,23 @@ OUTPUT_DIR = './output'
 
 
 # User-defined variables
+skip_columns = os.environ.get('SKIP_TIME_COLUMNS', None)
+include_columns = os.environ.get('INCLUDE_TIME_COLUMNS', None)
 start_time_str = os.environ.get('START_TIME', '00:00:00')
 end_time_str = os.environ.get('END_TIME', '23:59:59')
 step_str = os.environ.get('STEP', '1m')
+
+# Validate columns
+if skip_columns is not None and include_columns is not None:
+    raise ValueError("SKIP_TIME_COLUMNS and INCLUDE_TIME_COLUMNS environment variables are mutually exclusive")
+if skip_columns:
+    skip_columns = skip_columns.split(',')
+    if 'time_int' in skip_columns:
+        raise ValueError('time_int column cannot be excluded')
+if include_columns:
+    include_columns = include_columns.split(',')
+    if 'time_int' not in include_columns:
+        raise ValueError('time_int column must be included')
 
 # Parse and normalize time strings (remove colons if present)
 start_time_str = start_time_str.replace(':', '')
@@ -122,6 +136,14 @@ while current_seconds <= int_end_seconds:
 
 # Create DataFrame
 df = pd.DataFrame(time_list)
+
+# Exclude columns listed in SKIP_TIME_COLUMNS or columns not mentioned in INCLUDE_TIME_COLUMNS
+if skip_columns:
+    df = df.drop(columns=[col for col in skip_columns if col in df.columns])
+elif include_columns:
+    # Always keep 'time_int' as the primary key
+    cols_to_keep = [col for col in include_columns if col in df.columns]
+    df = df[cols_to_keep]
 
 # Save to CSV without index
 df.to_csv(OUTPUT_DIR + '/daytime.csv', index=False)
