@@ -1,7 +1,5 @@
 # Calendar Table Generator
 
-Forked from: [TeneoPython01/calendar_table](https://github.com/TeneoPython01/calendar_table)
-
 
 ## Purpose
 
@@ -93,13 +91,13 @@ Documentation: [Full column list with datatypes and descriptions](./docs/col_des
   64-bit systems.  
 
 
-## Authors
+## Maintainers and Credits
 
 This project is maintained by Vettabase.
 
-This project is a calendar_table derivative. The author is
-[TeneoPython01](https://github.com/TeneoPython01),
-with external contributions where noted.
+This project was originally forked from [TeneoPython01/calendar_table](https://github.com/TeneoPython01/calendar_table).
+The original project's author is [TeneoPython01](https://github.com/TeneoPython01).
+External contributions, if still present, are noted in the code.
 
 
 ### License
