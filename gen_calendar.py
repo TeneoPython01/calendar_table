@@ -26,14 +26,14 @@ pd.set_option('display.max_columns', 1000) #allow printsin lots of cols to scree
 pd.set_option('display.width', 1000) #don't wrap lots of columns
 
 # user-defined variables
-skip_columns = os.environ.get('SKIP_COLUMNS', None)
-include_columns = os.environ.get('INCLUDE_COLUMNS', None)
+skip_columns = os.environ.get('SKIP_CALENDAR_COLUMNS', None)
+include_columns = os.environ.get('INCLUDE_CALENDAR_COLUMNS', None)
 start_dt = os.environ.get('START_DATE')
 end_dt = os.environ.get('END_DATE')
 
 # validate columns
 if skip_columns is not None and include_columns is not None:
-    raise ValueError("SKIP_COLUMNS and INCLUDE_COLUMNS environment variables are mutually exclusive")
+    raise ValueError("SKIP_CALENDAR_COLUMNS and INCLUDE_CALENDAR_COLUMNS environment variables are mutually exclusive")
 if skip_columns:
     skip_columns = skip_columns.split(',')
     if 'dt' in skip_columns:
@@ -426,7 +426,7 @@ df['dark_duration_utc'] = (df['dark_duration_utc'].dt.total_seconds() / 3600).ro
 df['sun_duration_local'] = (df['sun_duration_local'].dt.total_seconds() / 3600).round().astype(int)
 df['dark_duration_local'] = (df['dark_duration_local'].dt.total_seconds() / 3600).round().astype(int)
 
-# Now we exclude variables listed in SKIP_COLUMNS xor columns not mentioned in INCLUDE_COLUMNS.
+# Now we exclude variables listed in SKIP_CALENDAR_COLUMNS xor columns not mentioned in INCLUDE_CALENDAR_COLUMNS.
 # Doing this now means that all columns are generated, whether they are needed or not.
 # But there are benefits:
 #   - We keep the code less verbose
