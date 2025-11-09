@@ -32,13 +32,32 @@ docker run -e START_DATE='2020-01-01' -e END_DATE='2028-12-31' \
   -v ./output:/app/output calendar-table
 ```
 
-Argumdnts:
+Options:
 
+- `SKIP_CALENDAR`: don't generate a calendar table.
+- `SKIP_DAYTIME`: don't generate a daytime table.
 - `START_DATE` and `END_DATE` are in the 'YYYY-MM-DD' format. Separators can be
   added for better readibility. Dashes (`-`) and slashes (`/`) are accepted,
   but optional.
+- `INCLUDE_CALENDAR_COLUMNS` can be set to a comma-separated list of columns to include
+  in the output. `dt` must be specified. By default, all columns are included.
+- `SKIP_CALENDAR_COLUMNS` can be set to a comma-separated list of columns to exclude
+  from the output. Cannot be set if `INCLUDE_CALENDAR_COLUMNS` is set.
+  `dt` cannot be skipped. By default, no column is skipped.
+- `START_TIME` and `END_TIME` are in the `HH:MM:SS` format (columns are optional).
+  Default: `00:00:00` and `23:59:59`. An end time of `23:59:60` is admitted, because
+  you might want to include the leap second.
+- `TIME_STEP` is the increment for the daytime table. Default: `1m`.
+  Supported units are `s`, `m`, and `h` (case-insensitive). Units cannot be combined.
+- `INCLUDE_TIME_COLUMNS` can be set to a comma-separated list of columns to include
+  in the output. `dt` must be specified. By default, all columns are included.
+- `SKIP_TIME_COLUMNS` can be set to a comma-separated list of columns to exclude
+  from the output. Cannot be set if `INCLUDE_TIME_COLUMNS` is set.
+  `dt` cannot be skipped. By default, no column is skipped.
 - The path (`./output`) will be created on the host system if it doesn't exist.
-  It will be a directory containing the generated file.
+  It contain the following generated files:
+  - `daytime.csv`
+  - `calendar.csv`
 
 
 ## Which Columns are Created
