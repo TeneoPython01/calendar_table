@@ -21,7 +21,7 @@ skip_columns = os.environ.get('SKIP_TIME_COLUMNS', None)
 include_columns = os.environ.get('INCLUDE_TIME_COLUMNS', None)
 start_time_str = os.environ.get('START_TIME', '00:00:00')
 end_time_str = os.environ.get('END_TIME', '23:59:59')
-step_str = os.environ.get('STEP', '1m')
+step_str = os.environ.get('TIME_STEP', '1m')
 
 # Validate columns
 if skip_columns is not None and include_columns is not None:
