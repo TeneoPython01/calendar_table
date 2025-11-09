@@ -1,10 +1,8 @@
 '''
-PURPOSE:
-Quickly and easily generate a calendar table with many columns of date dimensions
-and metadata. Output to dataframe or CSV to ingest into a database or for use in
-an application like Excel or PowerBI. See readme.md in git repo for more info @
-https://github.com/TeneoPython01
+Generate a calendar table with various date attributes and metadata.
+Write output to a CSV file.
 '''
+
 
 import math
 import os

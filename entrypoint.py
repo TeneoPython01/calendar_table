@@ -1,5 +1,6 @@
 '''
-Orchestrate running gen_calendar.py and gen_daytime.py scripts with optional skipping.
+Orchestrate running gen_daytime.py and gen_calendar.py scripts with optional skipping.
+SKIP_* environment variables can be set to avoid calling specific files.
 Useful as a Docker entrypoint.
 '''
 

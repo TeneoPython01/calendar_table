@@ -1,7 +1,6 @@
 '''
-PURPOSE:
-Quickly and easily generate a daytime table with time dimensions.
-Output to a CSV file.
+Generate a daytime table with various time attributes and metadata.
+Write output to a CSV file.
 
 The original code was contributed by C. Sonnet: c.sonnet@anthropic.com
 '''
