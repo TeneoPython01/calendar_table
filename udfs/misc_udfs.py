@@ -14,36 +14,6 @@ def getPathAndFilename():
             '/'.join(os.path.abspath(sys.argv[0]).split('/')[-2:])
             )
 
-def getUser():
-    """
-    :returns: the current user
-    """
-
-    try:
-        return os.getlogin()
-    except (OSError, AttributeError):
-        # Fallback for Docker/environments without controlling terminal
-        return os.environ.get('USER', os.environ.get('USERNAME', 'docker-user'))
-    
-
-def buildMultilineHeader():
-    """
-    :returns: multiline string with a header containing information about the script
-    """
-
-    header_string = """====================
-        o PATH OF SCRIPT: {}
-        o USER RUNNING IT: {}
-    ====================""".format(getPathAndFilename()[1], getUser())
-
-    return header_string
-
-def printHeader(use_as_method=1):
-    if use_as_method==1:
-        tprint(buildMultilineHeader(), 'script metadata:')
-
-    return 0
-
 def count_string_lines(s):
     return len(s.split('\n'))
 
