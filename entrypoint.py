@@ -1,5 +1,5 @@
 '''
-Orchestrate running calendar.py and daytime.py scripts with optional skipping.
+Orchestrate running gen_calendar.py and gen_daytime.py scripts with optional skipping.
 Useful as a Docker entrypoint.
 '''
 
@@ -20,22 +20,22 @@ SKIP_DAYTIME = (os.environ.get('SKIP_DAYTIME', None) is not None)
 SKIP_CALENDAR = (os.environ.get('SKIP_CALENDAR', None) is not None)
 
 
-# Run daytime.py unless SKIP_DAYTIME was specified
+# Generate times unless SKIP_DAYTIME was specified
 if SKIP_DAYTIME:
-    print('Skipping daytime.py')
+    print('Skipping times generation')
 else:
-    print('Running daytime.py')
-    exit_code = run_script('daytime.py')
+    print('Generating times')
+    exit_code = run_script('gen_daytime.py')
     if exit_code != 0:
         sys.exit(exit_code)
     print('OK')
 
-# Run calendar.py unless SKIP_CALENDAR was specified
+# Generate calendar unless SKIP_CALENDAR was specified
 if SKIP_CALENDAR:
-    print('Skipping calendar.py')
+    print('Skipping calendar generation')
 else:
-    print('Running calendar.py')
-    exit_code = run_script('calendar.py')
+    print('Generating calendar')
+    exit_code = run_script('gen_calendar.py')
     if exit_code != 0:
         sys.exit(exit_code)
     print('OK')
