@@ -19,6 +19,7 @@ from docs import create_docs
 # Constants
 OUTPUT_DIR = './output'
 DOCS_DIR = OUTPUT_DIR + '/docs'
+OUTPUT_FILE = 'calendar.csv'
 
 
 #set pandas display options for printing to screen
@@ -440,7 +441,7 @@ elif include_columns:
     df = df[cols_to_keep]
 
 #save the calendar table to a CSV file
-df.to_csv(OUTPUT_DIR + '/calendar_table_output.csv')
+df.to_csv(OUTPUT_DIR + '/' + OUTPUT_FILE)
 misc_udfs.tprint('Calendar table process completed for ' + start_dt + ' through ' + end_dt + ' inclusive')
 
 #generate the CSV support document that
