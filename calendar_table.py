@@ -24,8 +24,8 @@ misc_udfs.printHeader()
 
 #set important user-defined variables
 #TODO: set these via a config.ini file
-start_dt='01-01-2020'
-end_dt='12-31-2025'
+start_dt='01-01-2025'
+end_dt='12-31-2028'
 cal_lat = 32.7  #set locale latitude;  dallas, tx is lat 32.7, lon -96.8
 cal_lon = -96.8 #set locale longitude; dallas, tx is lat 32.7, lon -96.8
 
