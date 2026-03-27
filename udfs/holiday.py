@@ -218,7 +218,7 @@ class Holiday():
         cal_df['holiday']=''
 
         for i in index_list:
-            cal_df['is_holiday'].at[i[0]] = 1
-            cal_df['holiday'].at[i[0]] = i[1]
+            cal_df.loc[i[0], 'is_holiday'] = 1
+            cal_df.loc[i[0], 'holiday'] = i[1]
 
         return cal_df

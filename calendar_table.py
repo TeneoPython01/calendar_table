@@ -7,6 +7,7 @@ https://github.com/TeneoPython01
 '''
 
 import math
+import os
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
@@ -21,11 +22,12 @@ pd.set_option('display.width', 1000) #don't wrap lots of columns
 
 #print metadata about the script and the user to start the script
 misc_udfs.printHeader()
-
+#resolve paths relative to this script's location regardless of working directory
+_dir = os.path.dirname(os.path.abspath(__file__))
 #set important user-defined variables
 #TODO: set these via a config.ini file
-start_dt='01-01-2020'
-end_dt='12-31-2025'
+start_dt='01-01-2025'
+end_dt='12-31-2028'
 cal_lat = 32.7  #set locale latitude;  dallas, tx is lat 32.7, lon -96.8
 cal_lon = -96.8 #set locale longitude; dallas, tx is lat 32.7, lon -96.8
 
@@ -65,7 +67,7 @@ df['doy'] = df['dt'].dt.dayofyear
 df['m_name'] = df['dt'].dt.month_name()
 
 #week number of year, using iso conventions (Monday is first DOW)
-df['iso_week'] = df['dt'].dt.week
+df['iso_week'] = df['dt'].dt.isocalendar().week.astype(int)
 
 #normalized week number of year, using logic where first week (partial or full) is always 1
 #and where Sunday is first DOW
@@ -253,14 +255,14 @@ df['dow_sun_oy'] = df[['y','is_dow_sun']].groupby('y')['is_dow_sun'].cumsum()
 
 #dow of month based on dow: first find the appropriate col to ref, then grab its value
 df['dow_om'] = 'dow_' + df['dow'].apply(lambda x: date_udfs.mapDayOfWeekToOrdinalFieldName(x)) + '_om'
-df['dow_om'] = df[df['dow_om'].values]
+df['dow_om'] = df.apply(lambda row: row[row['dow_om']], axis=1)
 
 #is last dow of yearmonth based on dow:
 df = df_udfs.addColumnFromGroupbyOperation(df, 'dow_om_max', 'ym', 'dow_om', 'max')
 
 #dow of year based on dow: first find the appropriate col to ref, then grab its value
 df['dow_oy'] = 'dow_' + df['dow'].apply(lambda x: date_udfs.mapDayOfWeekToOrdinalFieldName(x)) + '_oy'
-df['dow_oy'] = df[df['dow_oy'].values]
+df['dow_oy'] = df.apply(lambda row: row[row['dow_oy']], axis=1)
 
 #add the rules for holidays that are not workdays in the calendar table
 holiday_obj = holiday.Holiday()
@@ -397,16 +399,16 @@ df['dark_duration_local'] = timedelta(hours=24) - df['sun_duration_local']
 df['created_on'] = datetime.now()
 
 #save the calendar table to a CSV file
-df.to_csv('./calendar_table_output.csv')
+df.to_csv(os.path.join(_dir, 'calendar_table_output.csv'))
 misc_udfs.tprint('Calendar table process completed for ' + start_dt + ' through ' + end_dt + ' inclusive')
 
 #generate the CSV support document that
-create_docs.createColumnDescriptions(df, './docs/input/desc.csv').to_csv('./docs/col_descriptions.csv')
+create_docs.createColumnDescriptions(df, os.path.join(_dir, 'docs/input/desc.csv')).to_csv(os.path.join(_dir, 'docs/col_descriptions.csv'))
 
 #generate the HTML support document that explains each column in tha calendar_table
 create_docs.writeHTMLToFile(
     html_udfs.df_to_html('Documentation: Calendar Table Field Information',
-        create_docs.createColumnDescriptions(df, './docs/input/desc.csv')
-    ),'./docs/col_descriptions.html')
+        create_docs.createColumnDescriptions(df, os.path.join(_dir, 'docs/input/desc.csv'))
+    ), os.path.join(_dir, 'docs/col_descriptions.html'))
 
 misc_udfs.tprint('Documention about column descriptions and datatypes loaded to ./docs/col_descriptions.html')
